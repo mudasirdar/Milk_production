@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Adds Paneer Batti weight deduction columns to the Sale Order line list.
+
+        ODOO 19 RULES APPLIED:
+        1. XPath uses 'list' not 'tree' (renamed in Odoo 17+)
+        2. column_invisible must use parent.field for parent model fields
+        3. Target product_template_id (the visible product field in Odoo 19)
+    -->
+    <record id="sale_order_form_paneer_batti" model="ir.ui.view">
+        <field name="name">sale.order.form.paneer.batti</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_template_id']"
+                   position="after">
+
+                <!-- Hidden flag from LINE model — always hidden as a column -->
+                <field name="is_paneer_batti" column_invisible="1"/>
+
+                <!--
+                    column_invisible → hides entire column when no paneer batti in order
+                    required → only required for paneer batti lines
+                -->
+                <field
+                    name="gross_weight"
+                    string="Gross Wt (kg)"
+                    optional="show"
+                    column_invisible="not parent.has_paneer_batti"
+                    required="is_paneer_batti"/>
+
+                <field
+                    name="num_battis"
+                    string="No. of Battis"
+                    optional="show"
+                    column_invisible="not parent.has_paneer_batti"
+                    required="is_paneer_batti"/>
+
+                <field
+                    name="batti_weight"
+                    string="Batti Wt (kg)"
+                    optional="show"
+                    column_invisible="not parent.has_paneer_batti"/>
+
+                <field
+                    name="net_weight"
+                    string="Net Paneer Wt (kg)"
+                    optional="show"
+                    column_invisible="not parent.has_paneer_batti"
+                    readonly="1"/>
+
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
