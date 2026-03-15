@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Property Types -->
+        <record id="property_type_residential" model="property.type">
+            <field name="name">Residential</field>
+            <field name="sequence">10</field>
+            <field name="description">Residential properties including houses and homes</field>
+        </record>
+
+        <record id="property_type_commercial" model="property.type">
+            <field name="name">Commercial</field>
+            <field name="sequence">20</field>
+            <field name="description">Commercial properties for business purposes</field>
+        </record>
+
+        <record id="property_type_land" model="property.type">
+            <field name="name">Land</field>
+            <field name="sequence">30</field>
+            <field name="description">Empty land plots for sale or development</field>
+        </record>
+
+        <record id="property_type_apartment" model="property.type">
+            <field name="name">Apartment</field>
+            <field name="sequence">40</field>
+            <field name="description">Apartments and flats</field>
+        </record>
+
+        <record id="property_type_villa" model="property.type">
+            <field name="name">Villa</field>
+            <field name="sequence">50</field>
+            <field name="description">Luxury villas and estates</field>
+        </record>
+
+        <record id="property_type_office" model="property.type">
+            <field name="name">Office</field>
+            <field name="sequence">60</field>
+            <field name="description">Office spaces and buildings</field>
+        </record>
+
+        <record id="property_type_warehouse" model="property.type">
+            <field name="name">Warehouse</field>
+            <field name="sequence">70</field>
+            <field name="description">Warehouse and storage facilities</field>
+        </record>
+
+        <!-- Property Amenities -->
+        <record id="amenity_swimming_pool" model="property.amenity">
+            <field name="name">Swimming Pool</field>
+            <field name="sequence">10</field>
+            <field name="icon">fa-swimming-pool</field>
+            <field name="description">Property has a swimming pool</field>
+        </record>
+
+        <record id="amenity_elevator" model="property.amenity">
+            <field name="name">Elevator</field>
+            <field name="sequence">20</field>
+            <field name="icon">fa-building</field>
+            <field name="description">Building has an elevator</field>
+        </record>
+
+        <record id="amenity_security" model="property.amenity">
+            <field name="name">24/7 Security</field>
+            <field name="sequence">30</field>
+            <field name="icon">fa-shield-alt</field>
+            <field name="description">24/7 security services</field>
+        </record>
+
+        <record id="amenity_gym" model="property.amenity">
+            <field name="name">Gym</field>
+            <field name="sequence">40</field>
+            <field name="icon">fa-dumbbell</field>
+            <field name="description">Fitness center or gym</field>
+        </record>
+
+        <record id="amenity_garden" model="property.amenity">
+            <field name="name">Garden</field>
+            <field name="sequence">50</field>
+            <field name="icon">fa-tree</field>
+            <field name="description">Private or shared garden area</field>
+        </record>
+
+        <record id="amenity_air_conditioning" model="property.amenity">
+            <field name="name">Central Air Conditioning</field>
+            <field name="sequence">60</field>
+            <field name="icon">fa-snowflake</field>
+            <field name="description">Central air conditioning system</field>
+        </record>
+
+        <record id="amenity_cctv" model="property.amenity">
+            <field name="name">CCTV</field>
+            <field name="sequence">70</field>
+            <field name="icon">fa-video</field>
+            <field name="description">CCTV surveillance system</field>
+        </record>
+
+        <record id="amenity_balcony" model="property.amenity">
+            <field name="name">Balcony</field>
+            <field name="sequence">80</field>
+            <field name="icon">fa-home</field>
+            <field name="description">Property has a balcony</field>
+        </record>
+
+        <record id="amenity_parking" model="property.amenity">
+            <field name="name">Covered Parking</field>
+            <field name="sequence">90</field>
+            <field name="icon">fa-parking</field>
+            <field name="description">Covered parking facility</field>
+        </record>
+
+        <record id="amenity_playground" model="property.amenity">
+            <field name="name">Playground</field>
+            <field name="sequence">100</field>
+            <field name="icon">fa-child</field>
+            <field name="description">Children's playground</field>
+        </record>
+
+        <record id="amenity_wifi" model="property.amenity">
+            <field name="name">WiFi</field>
+            <field name="sequence">110</field>
+            <field name="icon">fa-wifi</field>
+            <field name="description">WiFi internet connection</field>
+        </record>
+
+        <record id="amenity_furnished" model="property.amenity">
+            <field name="name">Fully Furnished</field>
+            <field name="sequence">120</field>
+            <field name="icon">fa-couch</field>
+            <field name="description">Property is fully furnished</field>
+        </record>
+
+        <record id="amenity_laundry" model="property.amenity">
+            <field name="name">Laundry Room</field>
+            <field name="sequence">130</field>
+            <field name="icon">fa-tshirt</field>
+            <field name="description">Shared or private laundry facility</field>
+        </record>
+
+        <record id="amenity_pet_friendly" model="property.amenity">
+            <field name="name">Pet Friendly</field>
+            <field name="sequence">140</field>
+            <field name="icon">fa-paw</field>
+            <field name="description">Pets are allowed</field>
+        </record>
+
+        <record id="amenity_sauna" model="property.amenity">
+            <field name="name">Sauna</field>
+            <field name="sequence">150</field>
+            <field name="icon">fa-hot-tub</field>
+            <field name="description">Property has a sauna</field>
+        </record>
+
+        <record id="amenity_storage" model="property.amenity">
+            <field name="name">Storage Room</field>
+            <field name="sequence">160</field>
+            <field name="icon">fa-warehouse</field>
+            <field name="description">Additional storage space</field>
+        </record>
+    </data>
+</odoo>

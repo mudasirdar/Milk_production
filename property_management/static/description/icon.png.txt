@@ -1,0 +1,3 @@
+This is a placeholder for the module icon.
+To add a proper icon, replace this file with a PNG image (90x90 pixels recommended).
+You can use any image editing tool to create an icon representing property/real estate.

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Property Inquiry List View -->
+    <record id="property_inquiry_view_tree" model="ir.ui.view">
+        <field name="name">property.inquiry.list</field>
+        <field name="model">property.inquiry</field>
+        <field name="arch" type="xml">
+            <list string="Property Inquiries" sample="1">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="property_reference"/>
+                <field name="property_name"/>
+                <field name="partner_id"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'replied'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Property Inquiry Form View -->
+    <record id="property_inquiry_view_form" model="ir.ui.view">
+        <field name="name">property.inquiry.form</field>
+        <field name="model">property.inquiry</field>
+        <field name="arch" type="xml">
+            <form string="Property Inquiry">
+                <header>
+                    <button name="action_in_progress" string="In Progress"
+                            type="object" invisible="state != 'new'"
+                            class="oe_highlight"/>
+                    <button name="action_replied" string="Mark as Replied"
+                            type="object" invisible="state not in ('new', 'in_progress')"
+                            class="oe_highlight"/>
+                    <button name="action_close" string="Close"
+                            type="object" invisible="state == 'closed'"/>
+                    <button name="action_reopen" string="Reopen"
+                            type="object" invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,in_progress,replied,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Inquiry Details">
+                            <field name="name"/>
+                            <field name="property_id" options="{'no_create': True}"/>
+                            <field name="property_owner_id" readonly="1"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Customer Information">
+                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Message">
+                            <field name="message" placeholder="Customer inquiry message..."/>
+                        </page>
+                        <page string="Response">
+                            <group>
+                                <field name="response_date" readonly="1"/>
+                            </group>
+                            <field name="response" placeholder="Enter your response..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Property Inquiry Search View -->
+    <record id="property_inquiry_view_search" model="ir.ui.view">
+        <field name="name">property.inquiry.search</field>
+        <field name="model">property.inquiry</field>
+        <field name="arch" type="xml">
+            <search string="Property Inquiries">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="partner_id"/>
+                <field name="email"/>
+
+                <filter string="New" name="new" domain="[('state', '=', 'new')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Replied" name="replied" domain="[('state', '=', 'replied')]"/>
+                <filter string="Closed" name="closed" domain="[('state', '=', 'closed')]"/>
+
+                <separator/>
+                <filter string="My Inquiries" name="my_inquiries" domain="[('user_id', '=', uid)]"/>
+                <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', 0)]"/>
+
+                <group>
+                    <filter string="Property" name="group_property" context="{'group_by': 'property_id'}"/>
+                    <filter string="Customer" name="group_customer" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Assigned To" name="group_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Property Inquiry Action -->
+    <record id="property_inquiry_action" model="ir.actions.act_window">
+        <field name="name">Property Inquiries</field>
+        <field name="res_model">property.inquiry</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_new': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No inquiries yet
+            </p>
+            <p>
+                Customer inquiries will appear here when they contact you about properties.
+            </p>
+        </field>
+    </record>
+</odoo>

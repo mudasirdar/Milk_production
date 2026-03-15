@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rent Invoice List View -->
+    <record id="property_rent_invoice_view_tree" model="ir.ui.view">
+        <field name="name">property.rent.invoice.list</field>
+        <field name="model">property.rent.invoice</field>
+        <field name="arch" type="xml">
+            <list string="Rent Invoices" sample="1"
+                  decoration-success="state == 'paid'"
+                  decoration-warning="state == 'partial'"
+                  decoration-danger="state == 'overdue'"
+                  decoration-info="state == 'sent'">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="tenant_id"/>
+                <field name="invoice_date"/>
+                <field name="due_date"/>
+                <field name="amount" widget="monetary"/>
+                <field name="amount_paid" widget="monetary"/>
+                <field name="amount_due" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="days_overdue" optional="hide"/>
+                <field name="payment_date" optional="hide"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Rent Invoice Form View -->
+    <record id="property_rent_invoice_view_form" model="ir.ui.view">
+        <field name="name">property.rent.invoice.form</field>
+        <field name="model">property.rent.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Rent Invoice">
+                <header>
+                    <button name="action_send_invoice" string="Send Invoice"
+                            type="object" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_register_payment" string="Register Payment"
+                            type="object" invisible="state in ('paid', 'cancelled')" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('paid', 'cancelled')"/>
+                    <button name="action_set_draft" string="Set to Draft" type="object"
+                            invisible="state not in ('cancelled',)"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Invoice Number"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Billing Details">
+                            <field name="tenancy_id"/>
+                            <field name="property_id" readonly="1"/>
+                            <field name="tenant_id" readonly="1"/>
+                        </group>
+                        <group string="Invoice Dates">
+                            <field name="invoice_date"/>
+                            <field name="due_date"/>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                        </group>
+                    </group>
+
+                    <group string="Invoice Items">
+                        <group>
+                            <field name="rent_amount" widget="monetary"/>
+                            <field name="maintenance_fee" widget="monetary"/>
+                            <field name="parking_fee" widget="monetary"/>
+                            <field name="utility_charges" widget="monetary"/>
+                            <field name="other_charges" widget="monetary"/>
+                            <field name="late_fee" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="amount" widget="monetary" class="oe_subtotal_footer_separator" readonly="1"/>
+                            <field name="amount_paid" widget="monetary"/>
+                            <field name="amount_due" widget="monetary" readonly="1" class="text-danger fw-bold"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="days_overdue" readonly="1" invisible="days_overdue == 0"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment Information" invisible="state == 'draft'">
+                        <group>
+                            <field name="payment_date"/>
+                            <field name="payment_method"/>
+                            <field name="payment_reference"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Invoice description..."/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Rent Invoice Search View -->
+    <record id="property_rent_invoice_view_search" model="ir.ui.view">
+        <field name="name">property.rent.invoice.search</field>
+        <field name="model">property.rent.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="tenant_id"/>
+                <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
+                <filter string="Overdue" name="overdue" domain="[('state','=','overdue')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Rent Invoice Action -->
+    <record id="property_rent_invoice_action" model="ir.actions.act_window">
+        <field name="name">Rent Invoices</field>
+        <field name="res_model">property.rent.invoice</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No rent invoices yet
+            </p>
+            <p>
+                Rent invoices are automatically generated from active tenancies.
+            </p>
+        </field>
+    </record>
+</odoo>

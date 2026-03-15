@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tenant List View -->
+    <record id="property_tenant_view_tree" model="ir.ui.view">
+        <field name="name">property.tenant.list</field>
+        <field name="model">property.tenant</field>
+        <field name="arch" type="xml">
+            <list string="Tenants" sample="1">
+                <field name="reference" optional="show"/>
+                <field name="image" widget="image" optional="show"/>
+                <field name="name"/>
+                <field name="email" widget="email"/>
+                <field name="phone" widget="phone"/>
+                <field name="mobile" widget="phone" optional="hide"/>
+                <field name="current_property_id" optional="show"/>
+                <field name="tenancy_count" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'current'"
+                       decoration-info="state == 'prospect'"
+                       decoration-muted="state == 'past'"
+                       decoration-danger="state == 'blacklisted'"/>
+                <field name="rating" widget="priority" optional="hide"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Tenant Form View -->
+    <record id="property_tenant_view_form" model="ir.ui.view">
+        <field name="name">property.tenant.form</field>
+        <field name="model">property.tenant</field>
+        <field name="arch" type="xml">
+            <form string="Tenant">
+                <header>
+                    <button name="action_set_current" string="Set as Current Tenant"
+                            type="object" invisible="state == 'current'" class="oe_highlight"/>
+                    <button name="action_set_past" string="Set as Past Tenant"
+                            type="object" invisible="state == 'past'"/>
+                    <button name="action_blacklist" string="Blacklist"
+                            type="object" invisible="state == 'blacklisted'"
+                            class="btn-danger" confirm="Are you sure you want to blacklist this tenant?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="prospect,current,past"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tenancies" type="object" class="oe_stat_button" icon="fa-file-text">
+                            <field name="tenancy_count" widget="statinfo" string="Tenancies"/>
+                        </button>
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" string="Tenant Name"/>
+                        <h1>
+                            <field name="name" placeholder="Enter tenant name" class="o_text_overflow"/>
+                        </h1>
+                        <div>
+                            <span class="badge text-bg-secondary">
+                                <field name="reference" readonly="1"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Contact Information">
+                            <field name="partner_id"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                        </group>
+                        <group string="Current Status">
+                            <field name="current_property_id"/>
+                            <field name="rating" widget="priority"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Address" name="address">
+                            <group>
+                                <group>
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <div class="d-flex">
+                                            <field name="city" placeholder="City" class="o_address_city"/>
+                                            <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True}"/>
+                                            <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        </div>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_open': True}"/>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Identification" name="identification">
+                            <group>
+                                <group>
+                                    <field name="identification_type"/>
+                                    <field name="identification_number"/>
+                                    <field name="identification_document" filename="identification_filename" widget="binary"/>
+                                    <field name="identification_filename" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Emergency Contact" name="emergency">
+                            <group>
+                                <group>
+                                    <field name="emergency_contact_name"/>
+                                    <field name="emergency_contact_phone" widget="phone"/>
+                                    <field name="emergency_contact_relation"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Employment Information" name="employment">
+                            <group>
+                                <group>
+                                    <field name="employer_name"/>
+                                    <field name="employer_phone" widget="phone"/>
+                                    <field name="occupation"/>
+                                </group>
+                                <group>
+                                    <field name="monthly_income" widget="monetary"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes about the tenant..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tenant Kanban View -->
+    <record id="property_tenant_view_kanban" model="ir.ui.view">
+        <field name="name">property.tenant.kanban</field>
+        <field name="model">property.tenant</field>
+        <field name="arch" type="xml">
+            <kanban string="Tenants" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="state"/>
+                <field name="image"/>
+                <field name="current_property_id"/>
+                <field name="tenancy_count"/>
+                <field name="rating"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <field name="image" widget="image" options="{'preview_image': 'image', 'img_class': 'rounded-circle'}"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <i class="fa fa-envelope"/> <field name="email"/>
+                                </div>
+                                <div class="text-muted">
+                                    <i class="fa fa-phone"/> <field name="phone"/>
+                                </div>
+                                <div t-if="record.current_property_id.raw_value">
+                                    <i class="fa fa-home text-primary"/> <field name="current_property_id"/>
+                                </div>
+                                <div class="mt-2">
+                                    <field name="state" widget="badge"/>
+                                    <span t-if="record.rating.raw_value" class="float-end">
+                                        <field name="rating" widget="priority"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Tenant Search View -->
+    <record id="property_tenant_view_search" model="ir.ui.view">
+        <field name="name">property.tenant.search</field>
+        <field name="model">property.tenant</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <filter string="Current Tenants" name="current" domain="[('state','=','current')]"/>
+                <filter string="Past Tenants" name="past" domain="[('state','=','past')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Tenant Action -->
+    <record id="property_tenant_action" model="ir.actions.act_window">
+        <field name="name">Tenants</field>
+        <field name="res_model">property.tenant</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first tenant
+            </p>
+            <p>
+                Track tenant information including contact details, employment, and tenancy history.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="property_management_menu_root"
+              name="Property Management"
+              sequence="10"
+              web_icon="property_management,static/description/icon.png"/>
+
+    <!-- Properties Menu -->
+    <menuitem id="property_management_menu_properties"
+              name="Properties"
+              parent="property_management_menu_root"
+              sequence="10"/>
+
+    <menuitem id="property_management_menu_all_properties"
+              name="All Properties"
+              parent="property_management_menu_properties"
+              action="property_property_action"
+              sequence="10"/>
+
+    <menuitem id="property_management_menu_my_properties"
+              name="My Properties"
+              parent="property_management_menu_properties"
+              action="property_property_action_my"
+              sequence="20"/>
+
+    <menuitem id="property_management_menu_published_properties"
+              name="Published Properties"
+              parent="property_management_menu_properties"
+              action="property_property_action_published"
+              sequence="30"/>
+
+    <!-- Tenants & Tenancy Menu -->
+    <menuitem id="property_management_menu_tenancy"
+              name="Tenancy"
+              parent="property_management_menu_root"
+              sequence="15"/>
+
+    <menuitem id="property_management_menu_tenants"
+              name="Tenants"
+              parent="property_management_menu_tenancy"
+              action="property_tenant_action"
+              sequence="10"/>
+
+    <menuitem id="property_management_menu_tenancies"
+              name="Tenancy Contracts"
+              parent="property_management_menu_tenancy"
+              action="property_tenancy_action"
+              sequence="20"/>
+
+    <menuitem id="property_management_menu_rent_invoices"
+              name="Rent Invoices"
+              parent="property_management_menu_tenancy"
+              action="property_rent_invoice_action"
+              sequence="30"/>
+
+    <!-- Inquiries Menu -->
+    <menuitem id="property_management_menu_inquiries"
+              name="Inquiries"
+              parent="property_management_menu_root"
+              action="property_inquiry_action"
+              sequence="20"/>
+
+    <!-- Maintenance Menu -->
+    <menuitem id="property_management_menu_maintenance"
+              name="Maintenance"
+              parent="property_management_menu_root"
+              action="property_maintenance_action"
+              sequence="30"/>
+
+    <!-- Management Menu -->
+    <menuitem id="property_management_menu_management"
+              name="Management"
+              parent="property_management_menu_root"
+              sequence="40"/>
+
+    <menuitem id="property_management_menu_valuations"
+              name="Valuations"
+              parent="property_management_menu_management"
+              action="property_valuation_action"
+              sequence="10"/>
+
+    <menuitem id="property_management_menu_insurance"
+              name="Insurance"
+              parent="property_management_menu_management"
+              action="property_insurance_action"
+              sequence="20"/>
+
+    <menuitem id="property_management_menu_utilities"
+              name="Utilities"
+              parent="property_management_menu_management"
+              action="property_utility_action"
+              sequence="30"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="property_management_menu_configuration"
+              name="Configuration"
+              parent="property_management_menu_root"
+              sequence="100"
+              groups="property_management.group_property_manager"/>
+
+    <menuitem id="property_management_menu_property_types"
+              name="Property Types"
+              parent="property_management_menu_configuration"
+              action="property_type_action"
+              sequence="10"/>
+
+    <menuitem id="property_management_menu_categories"
+              name="Property Categories"
+              parent="property_management_menu_configuration"
+              action="property_category_action"
+              sequence="15"/>
+
+    <menuitem id="property_management_menu_amenities"
+              name="Amenities"
+              parent="property_management_menu_configuration"
+              action="property_amenity_action"
+              sequence="20"/>
+</odoo>

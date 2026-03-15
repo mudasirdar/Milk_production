@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Property Menu to Portal -->
+    <template id="portal_my_home_menu_property" name="Portal My Home: Property Entries" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Properties</t>
+                <t t-set="url" t-value="'/my/properties'"/>
+                <t t-set="placeholder_count" t-value="'property_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Add Inquiry Menu to Portal -->
+    <template id="portal_my_home_menu_inquiry" name="Portal My Home: Inquiry Entries" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Property Inquiries</t>
+                <t t-set="url" t-value="'/my/inquiries'"/>
+                <t t-set="placeholder_count" t-value="'inquiry_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Portal: My Properties -->
+    <template id="portal_my_properties" name="My Properties">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Properties</t>
+            </t>
+
+            <div t-if="not properties" class="alert alert-info text-center mt-3">
+                <p>There are currently no properties for your account.</p>
+                <a href="/my/property/new" class="btn btn-primary">Create Property</a>
+            </div>
+
+            <t t-if="properties" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Property Name</th>
+                        <th>Type</th>
+                        <th>Transaction</th>
+                        <th>Price</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="properties" t-as="prop">
+                        <tr>
+                            <td><t t-esc="prop.reference"/></td>
+                            <td>
+                                <a t-attf-href="/my/property/#{prop.id}">
+                                    <t t-esc="prop.name"/>
+                                </a>
+                            </td>
+                            <td><t t-esc="prop.property_type_id.name"/></td>
+                            <td>
+                                <span t-if="prop.transaction_type == 'sale'" class="badge bg-success">For Sale</span>
+                                <span t-elif="prop.transaction_type == 'rent'" class="badge bg-info">For Rent</span>
+                                <span t-else="" class="badge bg-warning">For Lease</span>
+                            </td>
+                            <td><t t-esc="prop.price" t-options="{'widget': 'monetary', 'display_currency': prop.currency_id}"/></td>
+                            <td><t t-esc="prop.location"/></td>
+                            <td>
+                                <span t-attf-class="badge bg-#{
+                                    'secondary' if prop.state == 'draft' else
+                                    'warning' if prop.state == 'pending' else
+                                    'success' if prop.state == 'approved' else
+                                    'info' if prop.state == 'published' else 'danger'
+                                }">
+                                    <t t-esc="prop.state.replace('_', ' ').title()"/>
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a t-attf-href="/my/property/#{prop.id}" class="btn btn-sm btn-secondary">View</a>
+                                <a t-if="prop.state == 'draft'" t-attf-href="/my/property/#{prop.id}/edit" class="btn btn-sm btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+
+            <div t-if="properties" class="mt-3">
+                <a href="/my/property/new" class="btn btn-primary">Add New Property</a>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal: Property Detail -->
+    <template id="portal_property_detail" name="Property Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="property.name"/>
+
+            <!-- Success Message -->
+            <div t-if="request.params.get('update_success')" class="alert alert-success alert-dismissible fade show">
+                Property updated successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+            </div>
+            <div t-if="request.params.get('create_success')" class="alert alert-success alert-dismissible fade show">
+                Property created successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+            </div>
+
+            <div class="container">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2><t t-esc="property.name"/></h2>
+                            <div>
+                                <a t-if="property.state == 'draft'" t-attf-href="/my/property/#{property.id}/edit" class="btn btn-primary">Edit</a>
+                                <a t-if="property.website_published" t-attf-href="/property/#{property.id}" class="btn btn-success" target="_blank">
+                                    View on Website
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <img t-if="property.image_main"
+                                             t-att-src="'data:image/png;base64,%s' % property.image_main.decode('utf-8')"
+                                             class="img-fluid rounded" t-att-alt="property.name"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <th>Reference:</th>
+                                                <td><t t-esc="property.reference"/></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Type:</th>
+                                                <td><t t-esc="property.property_type_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Transaction:</th>
+                                                <td><t t-esc="property.transaction_type.replace('_', ' ').title()"/></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Price:</th>
+                                                <td class="text-success"><strong><t t-esc="property.price" t-options="{'widget': 'monetary', 'display_currency': property.currency_id}"/></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Location:</th>
+                                                <td><t t-esc="property.location"/></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status:</th>
+                                                <td>
+                                                    <span t-attf-class="badge bg-#{
+                                                        'secondary' if property.state == 'draft' else
+                                                        'warning' if property.state == 'pending' else
+                                                        'success' if property.state == 'approved' else
+                                                        'info' if property.state == 'published' else 'danger'
+                                                    }">
+                                                        <t t-esc="property.state.replace('_', ' ').title()"/>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="property.bedrooms">
+                                                <th>Bedrooms:</th>
+                                                <td><t t-esc="property.bedrooms"/></td>
+                                            </tr>
+                                            <tr t-if="property.bathrooms">
+                                                <th>Bathrooms:</th>
+                                                <td><t t-esc="property.bathrooms"/></td>
+                                            </tr>
+                                            <tr t-if="property.building_area">
+                                                <th>Building Area:</th>
+                                                <td><t t-esc="property.building_area"/> sqm</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4" t-if="property.description">
+                                    <div class="col-12">
+                                        <h5>Description</h5>
+                                        <t t-raw="property.description"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4" t-if="property.amenity_ids">
+                                    <div class="col-12">
+                                        <h5>Amenities</h5>
+                                        <t t-foreach="property.amenity_ids" t-as="amenity">
+                                            <span class="badge bg-secondary me-2"><t t-esc="amenity.name"/></span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <a href="/my/properties" class="btn btn-secondary">Back to Properties</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal: New Property Form -->
+    <template id="portal_property_new" name="New Property">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="'New Property'"/>
+
+            <div class="container">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h2>Add New Property</h2>
+
+                        <form action="/my/property/create" method="post" class="mt-4">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5>Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Property Name*</label>
+                                        <input type="text" class="form-control" id="name" name="name" required="required"/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="5"/>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="property_type_id" class="form-label">Property Type*</label>
+                                            <select class="form-select" id="property_type_id" name="property_type_id" required="required">
+                                                <option value="">Select Type</option>
+                                                <t t-foreach="property_types" t-as="ptype">
+                                                    <option t-att-value="ptype.id"><t t-esc="ptype.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="transaction_type" class="form-label">Transaction Type*</label>
+                                            <select class="form-select" id="transaction_type" name="transaction_type" required="required">
+                                                <option value="">Select Transaction</option>
+                                                <option value="sale">For Sale</option>
+                                                <option value="rent">For Rent</option>
+                                                <option value="lease">For Lease</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="price" class="form-label">Price*</label>
+                                            <input type="number" step="0.01" class="form-control" id="price" name="price" required="required"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5>Location</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="street" class="form-label">Street</label>
+                                            <input type="text" class="form-control" id="street" name="street"/>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="city" class="form-label">City*</label>
+                                            <input type="text" class="form-control" id="city" name="city" required="required"/>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="zip" class="form-label">ZIP Code</label>
+                                            <input type="text" class="form-control" id="zip" name="zip"/>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="country_id" class="form-label">Country*</label>
+                                            <select class="form-select" id="country_id" name="country_id" required="required">
+                                                <option value="">Select Country</option>
+                                                <t t-foreach="countries" t-as="country">
+                                                    <option t-att-value="country.id"><t t-esc="country.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5>Property Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="bedrooms" class="form-label">Bedrooms</label>
+                                            <input type="number" class="form-control" id="bedrooms" name="bedrooms" min="0"/>
+                                        </div>
+
+                                        <div class="col-md-3 mb-3">
+                                            <label for="bathrooms" class="form-label">Bathrooms</label>
+                                            <input type="number" class="form-control" id="bathrooms" name="bathrooms" min="0"/>
+                                        </div>
+
+                                        <div class="col-md-3 mb-3">
+                                            <label for="parking_spaces" class="form-label">Parking Spaces</label>
+                                            <input type="number" class="form-control" id="parking_spaces" name="parking_spaces" min="0"/>
+                                        </div>
+
+                                        <div class="col-md-3 mb-3">
+                                            <label for="year_built" class="form-label">Year Built</label>
+                                            <input type="number" class="form-control" id="year_built" name="year_built" min="1800" max="2100"/>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="building_area" class="form-label">Building Area (sqm)</label>
+                                            <input type="number" step="0.01" class="form-control" id="building_area" name="building_area" min="0"/>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="land_area" class="form-label">Land Area (sqm)</label>
+                                            <input type="number" step="0.01" class="form-control" id="land_area" name="land_area" min="0"/>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="property_condition" class="form-label">Property Condition</label>
+                                            <select class="form-select" id="property_condition" name="property_condition">
+                                                <option value="">Select Condition</option>
+                                                <option value="new">New</option>
+                                                <option value="excellent">Excellent</option>
+                                                <option value="good">Good</option>
+                                                <option value="fair">Fair</option>
+                                                <option value="needs_renovation">Needs Renovation</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5>Amenities</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <t t-foreach="amenities" t-as="amenity">
+                                            <div class="col-md-4 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="amenity_ids"
+                                                           t-att-value="amenity.id" t-att-id="'amenity_%s' % amenity.id"/>
+                                                    <label class="form-check-label" t-att-for="'amenity_%s' % amenity.id">
+                                                        <t t-esc="amenity.name"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Create Property</button>
+                                <a href="/my/properties" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal: Edit Property (similar to new, but with values) -->
+    <template id="portal_property_edit" name="Edit Property">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="'Edit Property'"/>
+
+            <div class="container">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h2>Edit Property: <t t-esc="property.name"/></h2>
+
+                        <form t-attf-action="/my/property/#{property.id}/update" method="post" class="mt-4">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5>Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Property Name*</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               t-att-value="property.name" required="required"/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="5">
+                                            <t t-esc="property.description"/>
+                                        </textarea>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="property_type_id" class="form-label">Property Type*</label>
+                                            <select class="form-select" id="property_type_id" name="property_type_id" required="required">
+                                                <t t-foreach="property_types" t-as="ptype">
+                                                    <option t-att-value="ptype.id"
+                                                            t-att-selected="'selected' if ptype.id == property.property_type_id.id else None">
+                                                        <t t-esc="ptype.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="transaction_type" class="form-label">Transaction Type*</label>
+                                            <select class="form-select" id="transaction_type" name="transaction_type" required="required">
+                                                <option value="sale" t-att-selected="'selected' if property.transaction_type == 'sale' else None">For Sale</option>
+                                                <option value="rent" t-att-selected="'selected' if property.transaction_type == 'rent' else None">For Rent</option>
+                                                <option value="lease" t-att-selected="'selected' if property.transaction_type == 'lease' else None">For Lease</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label for="price" class="form-label">Price*</label>
+                                            <input type="number" step="0.01" class="form-control" id="price" name="price"
+                                                   t-att-value="property.price" required="required"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Update Property</button>
+                                <a t-attf-href="/my/property/#{property.id}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal: My Inquiries -->
+    <template id="portal_my_inquiries" name="My Inquiries">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Property Inquiries</t>
+            </t>
+
+            <div t-if="not inquiries" class="alert alert-info text-center mt-3">
+                <p>You have no property inquiries yet.</p>
+            </div>
+
+            <t t-if="inquiries" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Property</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="inquiries" t-as="inq">
+                        <tr>
+                            <td><t t-esc="inq.create_date" t-options="{'widget': 'date'}"/></td>
+                            <td><t t-esc="inq.name"/></td>
+                            <td><t t-esc="inq.property_name"/></td>
+                            <td><t t-esc="inq.partner_id.name"/></td>
+                            <td>
+                                <span t-attf-class="badge bg-#{
+                                    'primary' if inq.state == 'new' else
+                                    'info' if inq.state == 'in_progress' else
+                                    'success' if inq.state == 'replied' else 'secondary'
+                                }">
+                                    <t t-esc="inq.state.replace('_', ' ').title()"/>
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a t-attf-href="/my/inquiry/#{inq.id}" class="btn btn-sm btn-secondary">View</a>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Portal: Inquiry Detail -->
+    <template id="portal_inquiry_detail" name="Inquiry Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title" t-value="inquiry.name"/>
+
+            <div class="container">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h2><t t-esc="inquiry.name"/></h2>
+
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th>Property:</th>
+                                        <td>
+                                            <a t-attf-href="/my/property/#{inquiry.property_id.id}">
+                                                <t t-esc="inquiry.property_name"/>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Customer:</th>
+                                        <td><t t-esc="inquiry.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td><t t-esc="inquiry.email"/></td>
+                                    </tr>
+                                    <tr t-if="inquiry.phone">
+                                        <th>Phone:</th>
+                                        <td><t t-esc="inquiry.phone"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date:</th>
+                                        <td><t t-esc="inquiry.create_date" t-options="{'widget': 'datetime'}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td>
+                                            <span t-attf-class="badge bg-#{
+                                                'primary' if inquiry.state == 'new' else
+                                                'info' if inquiry.state == 'in_progress' else
+                                                'success' if inquiry.state == 'replied' else 'secondary'
+                                            }">
+                                                <t t-esc="inquiry.state.replace('_', ' ').title()"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div class="mt-4">
+                                    <h5>Message</h5>
+                                    <p><t t-esc="inquiry.message"/></p>
+                                </div>
+
+                                <div class="mt-4" t-if="inquiry.response">
+                                    <h5>Response</h5>
+                                    <t t-raw="inquiry.response"/>
+                                    <p class="text-muted small mt-2">
+                                        Responded on: <t t-esc="inquiry.response_date" t-options="{'widget': 'datetime'}"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <a href="/my/inquiries" class="btn btn-secondary">Back to Inquiries</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

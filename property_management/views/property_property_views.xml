@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Property List View -->
+    <record id="property_property_view_tree" model="ir.ui.view">
+        <field name="name">property.property.list</field>
+        <field name="model">property.property</field>
+        <field name="arch" type="xml">
+            <list string="Properties" sample="1" multi_edit="1"
+                  decoration-info="state == 'published'"
+                  decoration-success="state == 'approved'"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state in ('draft', 'cancelled', 'rejected')">
+                <field name="reference" optional="show"/>
+                <field name="image_main" widget="image" options="{'size': [50, 50]}" optional="show"/>
+                <field name="name"/>
+                <field name="property_type_id" optional="show"/>
+                <field name="transaction_type" widget="badge" optional="show"/>
+                <field name="city" optional="show"/>
+                <field name="bedrooms" optional="hide" string="Beds"/>
+                <field name="bathrooms" optional="hide" string="Baths"/>
+                <field name="building_area" optional="hide" string="Area (m²)"/>
+                <field name="price" widget="monetary" optional="show" string="Sale Price"/>
+                <field name="monthly_rent" widget="monetary" optional="hide" string="Monthly Rent"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="owner_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="is_featured" widget="boolean_toggle" optional="hide" string="Featured"/>
+                <field name="views_count" optional="hide" string="Views"/>
+                <field name="state" widget="badge" optional="show"/>
+                <field name="website_published" widget="boolean_toggle" optional="show"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Property Form View -->
+    <record id="property_property_view_form" model="ir.ui.view">
+        <field name="name">property.property.form</field>
+        <field name="model">property.property</field>
+        <field name="arch" type="xml">
+            <form string="Property">
+                <header>
+                    <button name="action_submit_approval" string="Submit for Approval"
+                            type="object" invisible="state != 'draft'"
+                            class="oe_highlight"/>
+                    <button name="action_approve" string="Approve"
+                            type="object" invisible="state != 'pending'"
+                            class="oe_highlight" groups="property_management.group_property_manager"/>
+                    <button name="action_publish" string="Publish on Website"
+                            type="object" invisible="state != 'approved'"
+                            class="oe_highlight" groups="property_management.group_property_manager"/>
+                    <button name="action_reject" string="Reject"
+                            type="object" invisible="state != 'pending'"
+                            groups="property_management.group_property_manager"/>
+                    <button name="action_mark_sold" string="Mark as Sold"
+                            type="object" invisible="state != 'published' or transaction_type != 'sale'"
+                            class="btn-warning"/>
+                    <button name="action_mark_rented" string="Mark as Rented"
+                            type="object" invisible="state != 'published' or transaction_type == 'sale'"
+                            class="btn-warning"/>
+                    <button name="action_set_draft" string="Set to Draft"
+                            type="object" invisible="state not in ('rejected', 'cancelled')"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object" invisible="state in ('sold', 'rented', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pending,approved,published"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Featured" bg_color="text-bg-warning" invisible="not is_featured"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_inquiries"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-comments">
+                            <field name="inquiry_count" widget="statinfo" string="Inquiries"/>
+                        </button>
+                        <button name="action_view_tenancies"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text"
+                                invisible="tenancy_count == 0">
+                            <field name="tenancy_count" widget="statinfo" string="Tenancies"/>
+                        </button>
+                        <button name="action_view_maintenance"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-wrench"
+                                invisible="maintenance_count == 0">
+                            <field name="maintenance_count" widget="statinfo" string="Maintenance"/>
+                        </button>
+                        <button name="action_view_valuations"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-line-chart"
+                                invisible="valuation_count == 0">
+                            <field name="valuation_count" widget="statinfo" string="Valuations"/>
+                        </button>
+                        <button name="action_view_insurance"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shield"
+                                invisible="insurance_count == 0">
+                            <field name="insurance_count" widget="statinfo" string="Insurance"/>
+                        </button>
+                        <button name="action_view_utilities"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-bolt"
+                                invisible="utility_count == 0">
+                            <field name="utility_count" widget="statinfo" string="Utilities"/>
+                        </button>
+                        <button name="action_view_sub_properties"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-building"
+                                invisible="child_property_count == 0">
+                            <field name="child_property_count" widget="statinfo" string="Sub Properties"/>
+                        </button>
+                        <button name="toggle_active"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                        <field name="website_published" widget="website_redirect_button"/>
+                        <button string="Views"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-eye">
+                            <field name="views_count" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <field name="image_main" widget="image" class="oe_avatar"/>
+
+                    <div class="oe_title">
+                        <label for="name" string="Property Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Luxury Villa with Sea View" class="o_text_overflow"/>
+                        </h1>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge text-bg-secondary">
+                                <field name="reference" readonly="1"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Property Classification">
+                            <field name="property_type_id" options="{'no_create': True}"/>
+                            <field name="transaction_type"/>
+                            <field name="property_category"/>
+                            <field name="furnishing"/>
+                        </group>
+                        <group string="Pricing">
+                            <label for="price" string="Sale/Listing Price" class="fw-bold"/>
+                            <div class="o_row">
+                                <field name="price" widget="monetary" class="oe_inline"/>
+                                <field name="currency_id" invisible="1"/>
+                            </div>
+                            <label for="monthly_rent" string="Monthly Rent"
+                                   invisible="transaction_type not in ['rent', 'lease']" class="fw-bold"/>
+                            <div class="o_row" invisible="transaction_type not in ['rent', 'lease']">
+                                <field name="monthly_rent" widget="monetary" class="oe_inline" nolabel="1"/>
+                                <span class="text-muted">/month</span>
+                            </div>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Additional Details">
+                            <field name="property_condition" widget="badge"/>
+                            <field name="year_built"/>
+                            <field name="facing"/>
+                            <field name="is_featured" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Ownership &amp; Management">
+                            <field name="owner_id" widget="many2one_avatar_user"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="property_manager_id" widget="many2one_avatar_user"/>
+                        </group>
+                    </group>
+
+                    <group string="Quick Info" class="mt-3">
+                        <group>
+                            <label for="bedrooms" string="Beds / Baths / Parking"/>
+                            <div class="o_row">
+                                <field name="bedrooms" class="oe_inline"/>
+                                <span class="mx-2">
+                                    <i class="fa fa-bed"/> /</span>
+                                <field name="bathrooms" class="oe_inline"/>
+                                <span class="mx-2">
+                                    <i class="fa fa-bath"/> /</span>
+                                <field name="parking_spaces" class="oe_inline"/>
+                                <span>
+                                    <i class="fa fa-car"/>
+                                </span>
+                            </div>
+                        </group>
+                        <group>
+                            <label for="building_area" string="Building / Land Area"/>
+                            <div class="o_row">
+                                <field name="building_area" class="oe_inline"/>
+                                <span>m² /</span>
+                                <field name="land_area" class="oe_inline"/>
+                                <span>m²</span>
+                            </div>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Enter detailed property description..."
+                                   options="{'collaborative': true, 'resizable': true, 'codeview': true}"/>
+                        </page>
+
+                        <page string="Location &amp; Address" name="location">
+                            <group>
+                                <group string="Address">
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <div class="d-flex">
+                                            <field name="city" placeholder="City" class="o_address_city"/>
+                                            <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}"/>
+                                            <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        </div>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_open': True, 'no_create': True}"/>
+                                    </div>
+                                </group>
+                                <group string="Coordinates">
+                                    <field name="latitude" widget="float" digits="[10, 7]"/>
+                                    <field name="longitude" widget="float" digits="[10, 7]"/>
+                                    <div class="text-muted small" invisible="not latitude or not longitude">
+                                        <i class="fa fa-map-marker"/> Location coordinates for map display
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Specifications" name="specifications">
+                            <group>
+                                <group string="Structure">
+                                    <field name="number_of_floors" string="Floors"/>
+                                    <field name="number_of_apartments" string="Apartments"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Amenities &amp; Features" name="amenities">
+                            <group>
+                                <field name="amenity_ids" widget="many2many_tags"
+                                       options="{'color_field': 'sequence', 'no_create': True}"
+                                       placeholder="Select amenities..."/>
+                            </group>
+                            <div class="alert alert-info mt-3" role="alert" invisible="amenity_ids">
+                                <i class="fa fa-info-circle"/> No amenities selected. Click above to add property amenities like pool, gym, parking, etc.
+                            </div>
+                        </page>
+
+                        <page string="Gallery" name="images">
+                            <group>
+                                <group>
+                                    <div class="text-muted">
+                                        <i class="fa fa-camera"/> Upload multiple images to showcase your property
+                                    </div>
+                                </group>
+                            </group>
+                            <field name="image_ids" mode="kanban">
+                                <kanban>
+                                    <field name="name"/>
+                                    <field name="sequence"/>
+                                    <field name="image_small"/>
+                                    <templates>
+                                        <t t-name="card">
+                                            <div class="oe_kanban_global_click">
+                                                <div class="o_kanban_image">
+                                                    <field name="image_small" widget="image" options="{'preview_image': 'image_small', 'img_class': 'o_image_64_contain'}"/>
+                                                </div>
+                                                <div class="oe_kanban_details">
+                                                    <strong>
+                                                        <field name="name"/>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="sequence"/>
+                                            <field name="image" widget="image"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <page string="Floor Plan" name="floor_plan">
+                            <group>
+                                <group>
+                                    <field name="floor_plan" filename="floor_plan_filename" widget="binary"/>
+                                    <field name="floor_plan_filename" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div class="text-muted" invisible="floor_plan">
+                                        <i class="fa fa-file-pdf-o"/> Upload floor plan document (PDF, Image)
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Customer Inquiries" name="inquiries">
+                            <field name="inquiry_ids" readonly="1">
+                                <list decoration-info="state == 'new'" decoration-success="state == 'replied'">
+                                    <field name="create_date" string="Date"/>
+                                    <field name="name" string="Subject"/>
+                                    <field name="partner_id" widget="many2one_avatar"/>
+                                    <field name="email" widget="email"/>
+                                    <field name="phone" widget="phone"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Current Tenant" name="current_tenant" invisible="not current_tenant_id">
+                            <group>
+                                <group>
+                                    <field name="current_tenant_id" readonly="1"/>
+                                    <field name="current_tenancy_id" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="occupancy_rate" widget="percentage" readonly="1"/>
+                                    <field name="total_units"/>
+                                    <field name="occupied_units" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Valuation History" name="valuations" invisible="valuation_count == 0">
+                            <group>
+                                <field name="latest_valuation" widget="monetary" readonly="1" class="fw-bold"/>
+                            </group>
+                            <field name="valuation_ids" readonly="1">
+                                <list>
+                                    <field name="valuation_date"/>
+                                    <field name="valuation_type" widget="badge"/>
+                                    <field name="valuation_amount" widget="monetary"/>
+                                    <field name="appreciation" widget="monetary"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Safety Certificates" name="certificates">
+                            <field name="safety_certificate_ids">
+                                <list editable="bottom">
+                                    <field name="certificate_type"/>
+                                    <field name="certificate_number"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Nearest Places" name="nearest_places">
+                            <field name="nearest_place_ids">
+                                <list editable="bottom">
+                                    <field name="place_type"/>
+                                    <field name="name"/>
+                                    <field name="distance"/>
+                                    <field name="distance_unit"/>
+                                    <field name="travel_time"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Additional Info" name="additional">
+                            <group>
+                                <group string="Hierarchy">
+                                    <field name="parent_property_id"/>
+                                    <field name="management_company_id"/>
+                                </group>
+                                <group string="Media">
+                                    <field name="video_url" widget="url" placeholder="https://youtube.com/..."/>
+                                </group>
+                            </group>
+                            <group string="Depreciation">
+                                <group>
+                                    <field name="gross_value" widget="monetary"/>
+                                    <field name="salvage_value" widget="monetary"/>
+                                    <field name="residual_value" widget="monetary"/>
+                                </group>
+                                <group>
+                                    <field name="depreciation_method"/>
+                                    <field name="depressive_factor"/>
+                                    <field name="time_method"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Property Kanban View -->
+    <record id="property_property_view_kanban" model="ir.ui.view">
+        <field name="name">property.property.kanban</field>
+        <field name="model">property.property</field>
+        <field name="arch" type="xml">
+            <kanban string="Properties" sample="1" class="o_kanban_mobile">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="property_type_id"/>
+                <field name="transaction_type"/>
+                <field name="price"/>
+                <field name="currency_id"/>
+                <field name="location"/>
+                <field name="state"/>
+                <field name="image_main"/>
+                <field name="bedrooms"/>
+                <field name="bathrooms"/>
+                <field name="building_area"/>
+                <field name="is_featured"/>
+                <field name="website_published"/>
+                <field name="active"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click position-relative">
+                            <div t-if="record.is_featured.raw_value" class="ribbon ribbon-top-right">
+                                <span class="bg-warning text-white">
+                                    <i class="fa fa-star"/> Featured
+                                </span>
+                            </div>
+                            <div class="o_kanban_image mb-3">
+                                <field name="image_main" widget="image"
+                                       options="{'preview_image': 'image_main', 'img_class': 'rounded'}"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="flex-grow-1">
+                                        <strong class="o_kanban_record_title d-block fs-5">
+                                            <field name="name"/>
+                                        </strong>
+                                        <small class="text-muted">
+                                            <field name="reference"/>
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <field name="property_type_id" widget="badge"/>
+                                    <field name="transaction_type" widget="badge"/>
+                                </div>
+
+                                <div class="text-muted mb-2">
+                                    <i class="fa fa-map-marker text-primary"/>
+                                    <field name="location"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h4 class="text-success fw-bold mb-0">
+                                        <field name="price" widget="monetary"/>
+                                    </h4>
+                                </div>
+
+                                <div class="d-flex gap-3 text-muted mb-2">
+                                    <span t-if="record.bedrooms.raw_value" title="Bedrooms">
+                                        <i class="fa fa-bed"/> <field name="bedrooms"/>
+                                    </span>
+                                    <span t-if="record.bathrooms.raw_value" title="Bathrooms">
+                                        <i class="fa fa-bath"/> <field name="bathrooms"/>
+                                    </span>
+                                    <span t-if="record.building_area.raw_value" title="Building Area">
+                                        <i class="fa fa-arrows-alt"/> <field name="building_area"/> m²
+                                    </span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <field name="state" widget="badge"/>
+                                    <div>
+                                        <i t-if="record.website_published.raw_value"
+                                           class="fa fa-globe text-success"
+                                           title="Published on Website"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Property Search View -->
+    <record id="property_property_view_search" model="ir.ui.view">
+        <field name="name">property.property.search</field>
+        <field name="model">property.property</field>
+        <field name="arch" type="xml">
+            <search string="Properties">
+                <field name="name" string="Property"
+                       filter_domain="['|', '|', ('name', 'ilike', self), ('reference', 'ilike', self), ('location', 'ilike', self)]"/>
+                <field name="property_type_id"/>
+                <field name="owner_id"/>
+                <field name="city"/>
+                <field name="country_id"/>
+
+                <filter string="For Sale" name="for_sale" domain="[('transaction_type', '=', 'sale')]"/>
+                <filter string="For Rent" name="for_rent" domain="[('transaction_type', '=', 'rent')]"/>
+                <filter string="For Lease" name="for_lease" domain="[('transaction_type', '=', 'lease')]"/>
+
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Pending Approval" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Published" name="published" domain="[('state', '=', 'published')]"/>
+
+                <separator/>
+                <filter string="Featured" name="featured" domain="[('is_featured', '=', 1)]"/>
+                <filter string="Published on Website" name="website_published" domain="[('website_published', '=', 1)]"/>
+
+                <separator/>
+                <filter string="My Properties" name="my_properties" domain="[('user_id', '=', uid)]"/>
+
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', 0)]"/>
+                <group>
+                    <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type_id'}"/>
+                    <filter string="Transaction Type" name="group_transaction_type" context="{'group_by': 'transaction_type'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Owner" name="group_owner" context="{'group_by': 'owner_id'}"/>
+                    <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
+                    <filter string="Country" name="group_country" context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Property Action -->
+    <record id="property_property_action" model="ir.actions.act_window">
+        <field name="name">Properties</field>
+        <field name="res_model">property.property</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first property listing
+            </p>
+            <p>
+                Add properties to manage sales, rentals, and leases.
+            </p>
+        </field>
+    </record>
+
+    <!-- Property Action - My Properties -->
+    <record id="property_property_action_my" model="ir.actions.act_window">
+        <field name="name">My Properties</field>
+        <field name="res_model">property.property</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_my_properties': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first property listing
+            </p>
+        </field>
+    </record>
+
+    <!-- Property Action - Website Published -->
+    <record id="property_property_action_published" model="ir.actions.act_window">
+        <field name="name">Published Properties</field>
+        <field name="res_model">property.property</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_published': 1}</field>
+        <field name="domain">[('website_published', '=', 1)]</field>
+    </record>
+</odoo>

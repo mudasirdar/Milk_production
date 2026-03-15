@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Property Amenity List View -->
+    <record id="property_amenity_view_tree" model="ir.ui.view">
+        <field name="name">property.amenity.list</field>
+        <field name="model">property.amenity</field>
+        <field name="arch" type="xml">
+            <list string="Property Amenities">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="icon"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Property Amenity Form View -->
+    <record id="property_amenity_view_form" model="ir.ui.view">
+        <field name="name">property.amenity.form</field>
+        <field name="model">property.amenity</field>
+        <field name="arch" type="xml">
+            <form string="Property Amenity">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="icon" placeholder="e.g., fa-swimming-pool"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Enter description..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Property Amenity Search View -->
+    <record id="property_amenity_view_search" model="ir.ui.view">
+        <field name="name">property.amenity.search</field>
+        <field name="model">property.amenity</field>
+        <field name="arch" type="xml">
+            <search string="Property Amenities">
+                <field name="name"/>
+                <filter string="Active" name="active" domain="[('active','=',1)]"/>
+                <filter string="Archived" name="inactive" domain="[('active','=',0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Property Amenity Action -->
+    <record id="property_amenity_action" model="ir.actions.act_window">
+        <field name="name">Property Amenities</field>
+        <field name="res_model">property.amenity</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first property amenity
+            </p>
+            <p>
+                Define amenities such as Swimming Pool, Elevator, Security, Gym, Garden, etc.
+            </p>
+        </field>
+    </record>
+</odoo>

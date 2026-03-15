@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===================== MAINTENANCE VIEWS ===================== -->
+    <record id="property_maintenance_view_tree" model="ir.ui.view">
+        <field name="name">property.maintenance.list</field>
+        <field name="model">property.maintenance</field>
+        <field name="arch" type="xml">
+            <list string="Maintenance Requests" sample="1">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="category" widget="badge"/>
+                <field name="priority" widget="priority"/>
+                <field name="request_date"/>
+                <field name="scheduled_date" optional="hide"/>
+                <field name="assigned_to" widget="many2one_avatar" optional="show"/>
+                <field name="estimated_cost" widget="monetary" optional="hide"/>
+                <field name="actual_cost" widget="monetary" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_maintenance_view_form" model="ir.ui.view">
+        <field name="name">property.maintenance.form</field>
+        <field name="model">property.maintenance</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Request">
+                <header>
+                    <button name="action_submit" string="Submit" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_schedule" string="Schedule" type="object"
+                            invisible="state != 'submitted'" class="oe_highlight"/>
+                    <button name="action_start" string="Start Work" type="object"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_complete" string="Mark as Completed" type="object"
+                            invisible="state != 'in_progress'" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('completed', 'cancelled')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Brief description of the issue"/></h1>
+                        <div><span class="badge text-bg-secondary"><field name="reference" readonly="1"/></span></div>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="tenancy_id"/>
+                            <field name="tenant_id"/>
+                            <field name="category"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="scheduled_date"/>
+                            <field name="completion_date" readonly="1"/>
+                            <field name="assigned_to"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Cost">
+                            <field name="estimated_cost" widget="monetary"/>
+                            <field name="actual_cost" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="billable_to_tenant" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Resolution" name="resolution">
+                            <field name="resolution_notes"/>
+                        </page>
+                        <page string="Tenant Feedback" name="feedback" invisible="not tenant_rating">
+                            <group>
+                                <field name="tenant_rating" widget="priority"/>
+                                <field name="tenant_feedback"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="internal_notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="property_maintenance_action" model="ir.actions.act_window">
+        <field name="name">Maintenance</field>
+        <field name="res_model">property.maintenance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== VALUATION VIEWS ===================== -->
+    <record id="property_valuation_view_tree" model="ir.ui.view">
+        <field name="name">property.valuation.list</field>
+        <field name="model">property.valuation</field>
+        <field name="arch" type="xml">
+            <list string="Property Valuations">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="valuation_type" widget="badge"/>
+                <field name="valuation_date"/>
+                <field name="valuation_amount" widget="monetary"/>
+                <field name="appreciation" widget="monetary" optional="show"/>
+                <field name="appreciation_percentage" optional="show" widget="percentage"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_valuation_view_form" model="ir.ui.view">
+        <field name="name">property.valuation.form</field>
+        <field name="model">property.valuation</field>
+        <field name="arch" type="xml">
+            <form string="Property Valuation">
+                <header>
+                    <button name="action_complete" string="Mark as Completed" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_verify" string="Verify" type="object"
+                            invisible="state != 'completed'" class="oe_highlight"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                        <div><span class="badge text-bg-secondary"><field name="reference" readonly="1"/></span></div>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="valuation_type"/>
+                            <field name="valuation_date"/>
+                        </group>
+                        <group>
+                            <field name="valuator"/>
+                            <field name="valuator_license"/>
+                        </group>
+                    </group>
+
+                    <group string="Valuation Amounts">
+                        <group>
+                            <field name="valuation_amount" widget="monetary" class="fw-bold"/>
+                            <field name="previous_valuation" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="appreciation" widget="monetary" readonly="1"/>
+                            <field name="appreciation_percentage" widget="percentage" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Methodology" name="methodology">
+                            <field name="methodology"/>
+                        </page>
+                        <page string="Report" name="report">
+                            <group>
+                                <field name="valuation_report" filename="valuation_report_filename" widget="binary"/>
+                                <field name="valuation_report_filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="property_valuation_action" model="ir.actions.act_window">
+        <field name="name">Valuations</field>
+        <field name="res_model">property.valuation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== INSURANCE VIEWS ===================== -->
+    <record id="property_insurance_view_tree" model="ir.ui.view">
+        <field name="name">property.insurance.list</field>
+        <field name="model">property.insurance</field>
+        <field name="arch" type="xml">
+            <list string="Insurance Policies">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="insurance_company"/>
+                <field name="policy_type" widget="badge"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="coverage_amount" widget="monetary"/>
+                <field name="premium_amount" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_insurance_view_form" model="ir.ui.view">
+        <field name="name">property.insurance.form</field>
+        <field name="model">property.insurance</field>
+        <field name="arch" type="xml">
+            <form string="Insurance Policy">
+                <header>
+                    <button name="action_activate" string="Activate" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_renew" string="Renew Policy" type="object"
+                            invisible="state not in ('active', 'expired')" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel Policy" type="object"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                        <div><span class="badge text-bg-secondary"><field name="reference" readonly="1"/></span></div>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="insurance_company"/>
+                            <field name="agent_name"/>
+                            <field name="agent_phone" widget="phone"/>
+                            <field name="agent_email" widget="email"/>
+                        </group>
+                        <group>
+                            <field name="policy_type"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_days" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Financial Details">
+                        <group>
+                            <field name="coverage_amount" widget="monetary"/>
+                            <field name="premium_amount" widget="monetary"/>
+                            <field name="deductible" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="payment_frequency"/>
+                            <field name="auto_renew" widget="boolean_toggle"/>
+                            <field name="renewal_reminder_days"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Coverage Details" name="coverage">
+                            <field name="coverage_details"/>
+                        </page>
+                        <page string="Exclusions" name="exclusions">
+                            <field name="exclusions"/>
+                        </page>
+                        <page string="Policy Document" name="document">
+                            <group>
+                                <field name="policy_document" filename="policy_filename" widget="binary"/>
+                                <field name="policy_filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="property_insurance_action" model="ir.actions.act_window">
+        <field name="name">Insurance</field>
+        <field name="res_model">property.insurance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== UTILITY VIEWS ===================== -->
+    <record id="property_utility_view_tree" model="ir.ui.view">
+        <field name="name">property.utility.list</field>
+        <field name="model">property.utility</field>
+        <field name="arch" type="xml">
+            <list string="Utility Bills">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="utility_type" widget="badge"/>
+                <field name="bill_date"/>
+                <field name="due_date"/>
+                <field name="amount" widget="monetary"/>
+                <field name="amount_paid" widget="monetary"/>
+                <field name="amount_due" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="paid_by" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_utility_view_form" model="ir.ui.view">
+        <field name="name">property.utility.form</field>
+        <field name="model">property.utility</field>
+        <field name="arch" type="xml">
+            <form string="Utility Bill">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_register_payment" string="Register Payment" type="object"
+                            invisible="state in ('paid', 'cancelled')" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('paid', 'cancelled')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="tenancy_id"/>
+                            <field name="tenant_id" readonly="1"/>
+                            <field name="utility_type"/>
+                            <field name="provider_name"/>
+                            <field name="account_number"/>
+                        </group>
+                        <group>
+                            <field name="bill_date"/>
+                            <field name="due_date"/>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="paid_by"/>
+                        </group>
+                    </group>
+
+                    <group string="Usage" invisible="utility_type not in ('electricity', 'water', 'gas')">
+                        <group>
+                            <field name="previous_reading"/>
+                            <field name="current_reading"/>
+                            <field name="usage" readonly="1"/>
+                            <field name="unit_of_measure"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment">
+                        <group>
+                            <field name="amount" widget="monetary"/>
+                            <field name="amount_paid" widget="monetary"/>
+                            <field name="amount_due" widget="monetary" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="payment_date"/>
+                            <field name="payment_method"/>
+                            <field name="payment_reference"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Bill Document" name="document">
+                            <group>
+                                <field name="bill_document" filename="bill_filename" widget="binary"/>
+                                <field name="bill_filename" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="property_utility_action" model="ir.actions.act_window">
+        <field name="name">Utilities</field>
+        <field name="res_model">property.utility</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== CATEGORY VIEWS ===================== -->
+    <record id="property_category_view_tree" model="ir.ui.view">
+        <field name="name">property.category.list</field>
+        <field name="model">property.category</field>
+        <field name="arch" type="xml">
+            <list string="Property Categories" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="property_count" readonly="1"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="property_category_view_form" model="ir.ui.view">
+        <field name="name">property.category.form</field>
+        <field name="model">property.category</field>
+        <field name="arch" type="xml">
+            <form string="Property Category">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="parent_id"/>
+                        <field name="sequence"/>
+                        <field name="active" widget="boolean_toggle"/>
+                    </group>
+                    <field name="description" placeholder="Category description..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="property_category_action" model="ir.actions.act_window">
+        <field name="name">Property Categories</field>
+        <field name="res_model">property.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
