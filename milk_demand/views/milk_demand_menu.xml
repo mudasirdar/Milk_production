@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Menu -->
+    <menuitem id="menu_milk_demand_root"
+              name="Milk Demand"
+              sequence="25"
+              web_icon="milk_demand,static/description/icon.png"/>
+
+    <!-- Demands Menu -->
+    <menuitem id="menu_milk_demand_demands"
+              name="Demands"
+              parent="menu_milk_demand_root"
+              sequence="10"/>
+
+    <menuitem id="menu_milk_demand_all"
+              name="All Demands"
+              parent="menu_milk_demand_demands"
+              action="action_milk_demand"
+              sequence="10"/>
+
+    <menuitem id="menu_milk_demand_today"
+              name="Today's Demands"
+              parent="menu_milk_demand_demands"
+              action="action_milk_demand_today"
+              sequence="20"/>
+
+    <menuitem id="menu_milk_demand_pending"
+              name="Pending Conversion"
+              parent="menu_milk_demand_demands"
+              action="action_milk_demand_pending"
+              sequence="30"/>
+
+</odoo>

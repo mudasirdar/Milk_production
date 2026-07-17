@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Extend the Product Template form to add crates checkbox ──────── -->
+    <record id="product_template_form_view_rfaf" model="ir.ui.view">
+        <field name="name">product.template.form.rfaf</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add "Use Crates" checkbox and liters per crate field -->
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="rfaf_use_crates"/>
+                <field name="rfaf_units_per_crate"
+                       invisible="not rfaf_use_crates"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

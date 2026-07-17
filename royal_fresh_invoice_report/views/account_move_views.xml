@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Extend the standard Customer Invoice form ──────────────────── -->
+    <record id="view_move_form_rfaf" model="ir.ui.view">
+        <field name="name">account.move.form.rfaf</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert Challan / Route / Bill No. after the ref field -->
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="rfaf_serial_no"
+                       string="Bill No."
+                       placeholder="e.g. 2023"
+                       invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                <field name="rfaf_challan_no"
+                       string="Challan No."
+                       placeholder="e.g. Ch No. 2715"
+                       invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                <field name="rfaf_route"
+                       string="Route"
+                       placeholder="e.g. Wahipora Route"
+                       invisible="move_type not in ('out_invoice', 'out_refund')"/>
+            </xpath>
+
+            <!-- Add Crates field before quantity (crates calculates quantity) -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="before">
+                <field name="rfaf_crates" string="Crates" optional="show"/>
+            </xpath>
+
+            <!-- Add Return / Leakage / Sold columns after quantity -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="after">
+                <field name="rfaf_return_qty"   string="Return"   optional="show"/>
+                <field name="rfaf_leakage_qty"  string="Leakage"  optional="show"/>
+                <field name="rfaf_sold_qty"     string="Sold"     optional="show" readonly="1"/>
+            </xpath>
+
+            <!-- Crates + Balance page tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Agro / Dairy Info" name="rfaf_agro_info"
+                      invisible="move_type not in ('out_invoice', 'out_refund')">
+                    <group string="Crates Tracking">
+                        <group>
+                            <field name="rfaf_bill_crats" readonly="1"/>
+                            <field name="rfaf_previous_crats"/>
+                            <field name="rfaf_total_crats" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="rfaf_return_crets"/>
+                            <field name="rfaf_total_crats_bal" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Financial Summary">
+                        <group>
+                            <field name="rfaf_previous_balance"/>
+                            <field name="rfaf_received_cash"/>
+                        </group>
+                        <group>
+                            <field name="rfaf_total_balance" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

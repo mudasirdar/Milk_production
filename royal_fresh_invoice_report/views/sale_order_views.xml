@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Extend the Sale Order form to add crates field ──────────────── -->
+    <record id="view_order_form_rfaf" model="ir.ui.view">
+        <field name="name">sale.order.form.rfaf</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Crates field before Quantity in sale order lines (list view) -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="rfaf_crates" string="Crates" optional="show"/>
+            </xpath>
+
+            <!-- Add Crates field in sale order line form view -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_uom_qty']" position="before">
+                <label for="rfaf_crates"/>
+                <field name="rfaf_crates"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_rfaf_invoice">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+                <div class="page rfaf-invoice" style="padding: 15px 20px; font-size: 11px;">
+
+                    <style>
+                        /* Hide Odoo default header */
+                        .header { display: none !important; }
+                        div.header { display: none !important; }
+
+                        .rfaf-invoice * { box-sizing: border-box; }
+
+                        /* Company Header */
+                        .rfaf-company-header {
+                            text-align: center;
+                            border: 2.5px solid #017e84;
+                            border-radius: 6px;
+                            padding: 10px 15px 8px;
+                            margin-bottom: 8px;
+                            background: #f0fafa;
+                        }
+                        .rfaf-company-name {
+                            font-size: 24pt;
+                            font-weight: 900;
+                            color: #017e84;
+                            letter-spacing: 1.5px;
+                            text-transform: uppercase;
+                            margin: 0 0 6px;
+                            text-shadow: 0.5px 0 0 currentColor;
+                        }
+                        .rfaf-company-address {
+                            background: #017e84;
+                            color: #fff;
+                            font-size: 9pt;
+                            font-weight: 700;
+                            padding: 5px 12px;
+                            border-radius: 3px;
+                            display: inline-block;
+                            letter-spacing: 0.5px;
+                        }
+
+                        /* Meta row */
+                        .rfaf-meta {
+                            display: flex;
+                            justify-content: space-between;
+                            border: 1px solid #017e84;
+                            border-radius: 4px;
+                            padding: 6px 12px;
+                            margin-bottom: 6px;
+                            background: #fff;
+                        }
+                        .meta-label { font-weight: 800; color: #017e84; }
+                        .meta-value { font-weight: 600; }
+                        .meta-item { margin-right: 16px; }
+
+                        /* Customer row */
+                        .rfaf-customer {
+                            border: 1px solid #017e84;
+                            border-radius: 4px;
+                            padding: 6px 12px;
+                            margin-bottom: 8px;
+                            background: #fff;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .cust-label { font-weight: 800; color: #017e84; }
+                        .cust-value { font-weight: 700; }
+
+                        /* Product table */
+                        .rfaf-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9pt; }
+                        .rfaf-table thead tr { background: #017e84; color: #fff; }
+                        .rfaf-table thead th {
+                            padding: 7px 8px;
+                            border: 1px solid #005f64;
+                            text-align: center;
+                            font-weight: 800;
+                            font-size: 8.5pt;
+                        }
+                        .rfaf-table thead th.left { text-align: left; }
+                        .rfaf-table tbody td {
+                            padding: 6px 8px;
+                            border: 1px solid #cde8e8;
+                            vertical-align: middle;
+                            text-align: center;
+                        }
+                        .rfaf-table tbody td.left { text-align: left; }
+                        .rfaf-table tbody td.amount { text-align: right; font-weight: 700; }
+                        .rfaf-table tbody tr:nth-child(even) { background: #f4fcfc; }
+                        .product-name { font-weight: 700; color: #014d4e; }
+                        .product-note { font-size: 7.5pt; color: #888; }
+
+                        /* Bottom boxes */
+                        .rfaf-bottom { display: flex; gap: 10px; margin-bottom: 8px; }
+                        .rfaf-box { flex: 1; border: 1.5px solid #017e84; border-radius: 5px; overflow: hidden; }
+                        .rfaf-box-title {
+                            background: #017e84;
+                            color: #fff;
+                            font-weight: 800;
+                            font-size: 8pt;
+                            padding: 5px 12px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+                        .rfaf-box table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+                        .rfaf-box table td { padding: 5px 12px; border-bottom: 1px solid #e0f2f2; }
+                        .rfaf-box table tr:last-child td { border-bottom: none; }
+                        .rfaf-box table td:first-child { font-weight: 700; color: #333; }
+                        .rfaf-box table td:last-child { text-align: right; font-weight: 700; color: #014d4e; }
+                        .rfaf-box table tr.total-row { background: #e6f7f7; }
+                        .rfaf-box table tr.total-row td { font-weight: 900 !important; }
+
+                        /* Total balance bar */
+                        .rfaf-total-balance {
+                            background: #017e84;
+                            color: #fff;
+                            padding: 8px 16px;
+                            border-radius: 5px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 10px;
+                            font-size: 12pt;
+                            font-weight: 900;
+                        }
+                        .rfaf-total-balance .amount-val { font-size: 13pt; font-weight: 900; }
+
+                        /* Footer */
+                        .rfaf-footer {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-end;
+                            border-top: 2px dashed #017e84;
+                            padding-top: 8px;
+                            font-size: 9pt;
+                            color: #555;
+                        }
+                        .rfaf-contact {
+                            font-size: 10pt;
+                            color: #017e84;
+                        }
+                        .rfaf-sig { text-align: right; }
+                        .rfaf-sig-line {
+                            width: 160px;
+                            border-bottom: 1.5px solid #333;
+                            margin-bottom: 4px;
+                            height: 35px;
+                        }
+                    </style>
+
+                    <!-- COMPANY HEADER -->
+                    <div class="rfaf-company-header">
+                        <div class="rfaf-company-name"><t t-esc="o.company_id.name"/></div>
+                        <div class="rfaf-company-address">
+                            <t t-if="o.company_id.street"><t t-esc="o.company_id.street"/></t>
+                            <t t-if="o.company_id.city">, <t t-esc="o.company_id.city"/></t>
+                            <t t-if="o.company_id.zip"> <t t-esc="o.company_id.zip"/></t>
+                            <t t-if="o.company_id.state_id"> (<t t-esc="o.company_id.state_id.name"/>)</t>
+                        </div>
+                    </div>
+
+                    <!-- BILL META -->
+                    <div class="rfaf-meta">
+                        <div>
+                            <span class="meta-item">
+                                <span class="meta-label">No. </span>
+                                <span class="meta-value"><t t-esc="o.rfaf_serial_no or o.name"/></span>
+                            </span>
+                            <t t-if="o.rfaf_challan_no">
+                                <span class="meta-item">
+                                    <span class="meta-label">Ch No. </span>
+                                    <span class="meta-value"><t t-esc="o.rfaf_challan_no"/></span>
+                                </span>
+                            </t>
+                        </div>
+                        <div>
+                            <span class="meta-label">Date: </span>
+                            <span class="meta-value"><span t-field="o.invoice_date"/></span>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOMER ROW -->
+                    <div class="rfaf-customer">
+                        <div>
+                            <span class="cust-label">Name: </span>
+                            <span class="cust-value" t-field="o.partner_id"/>
+                        </div>
+                        <t t-if="o.rfaf_route">
+                            <div>
+                                <span class="cust-label">Route: </span>
+                                <span class="cust-value"><t t-esc="o.rfaf_route"/></span>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- PRODUCT TABLE -->
+                    <table class="rfaf-table">
+                        <thead>
+                            <tr>
+                                <th class="left" style="width:6%">Crats</th>
+                                <th class="left" style="width:30%">Particulars</th>
+                                <th style="width:10%">Qty.</th>
+                                <th style="width:9%">Return</th>
+                                <th style="width:9%">Leakage</th>
+                                <th style="width:9%">Sold</th>
+                                <th style="width:10%">Rate</th>
+                                <th style="width:12%; text-align:right; padding-right:10px;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')" t-as="line">
+                                <tr>
+                                    <td>
+                                        <t t-if="line.rfaf_crates"><t t-esc="line.rfaf_crates"/></t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td class="left">
+                                        <div class="product-name" t-field="line.product_id"/>
+                                        <t t-if="line.name and line.name != line.product_id.name">
+                                            <div class="product-note"><t t-esc="line.name"/></div>
+                                        </t>
+                                    </td>
+                                    <td><span t-field="line.quantity"/></td>
+                                    <td>
+                                        <t t-if="line.rfaf_return_qty"><t t-esc="'%.2f' % line.rfaf_return_qty"/></t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td>
+                                        <t t-if="line.rfaf_leakage_qty"><t t-esc="'%.2f' % line.rfaf_leakage_qty"/></t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td><t t-esc="'%.2f' % line.rfaf_sold_qty"/></td>
+                                    <td>
+                                        <span t-field="line.price_unit"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td class="amount">
+                                        <span t-field="line.price_subtotal"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- CRATES + FINANCIAL SUMMARY -->
+                    <div class="rfaf-bottom">
+                        <div class="rfaf-box">
+                            <div class="rfaf-box-title">Crates Summary</div>
+                            <table>
+                                <tr><td>Bill Crats</td><td><t t-esc="o.rfaf_bill_crats or '—'"/></td></tr>
+                                <tr><td>Previous Crats</td><td><t t-esc="o.rfaf_previous_crats or '—'"/></td></tr>
+                                <tr class="total-row"><td>Total Crats</td><td><t t-esc="o.rfaf_total_crats or '—'"/></td></tr>
+                                <tr><td>Return Crets</td><td><t t-esc="o.rfaf_return_crets or '—'"/></td></tr>
+                                <tr class="total-row"><td>Total Crats Bal.</td><td><t t-esc="o.rfaf_total_crats_bal or '—'"/></td></tr>
+                            </table>
+                        </div>
+                        <div class="rfaf-box">
+                            <div class="rfaf-box-title">Financial Summary</div>
+                            <table>
+                                <tr>
+                                    <td>Bill Amount</td>
+                                    <td>
+                                        <span t-field="o.amount_untaxed"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Previous Bal.</td>
+                                    <td>
+                                        <t t-if="o.rfaf_previous_balance">
+                                            <span t-field="o.rfaf_previous_balance"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Bal.</td>
+                                    <td>
+                                        <span t-esc="'{:,.2f}'.format(o.amount_total + (o.rfaf_previous_balance or 0.0))"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Received Cash / Chq. / Transf.</td>
+                                    <td>
+                                        <t t-if="o.rfaf_received_cash">
+                                            <span t-field="o.rfaf_received_cash"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TOTAL BALANCE -->
+                    <div class="rfaf-total-balance">
+                        <span>Total Balance</span>
+                        <span class="amount-val">
+                            <span t-field="o.rfaf_total_balance"
+                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </span>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="rfaf-footer">
+                        <div class="rfaf-contact">
+                            <t t-if="o.company_id.phone">
+                                <strong>Cell: <span t-field="o.company_id.phone"/></strong>
+                            </t>
+                        </div>
+                        <div class="rfaf-sig">
+                            <div class="rfaf-sig-line"></div>
+                            <strong>Sig. of Receiver</strong>
+                        </div>
+                    </div>
+
+                </div><!-- /.page -->
+            </t><!-- /basic_layout -->
+        </t>
+    </t>
+</template>
+</odoo>

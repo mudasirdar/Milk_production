@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_rfaf_a4" model="report.paperformat">
+        <field name="name">Royal Fresh Agro – A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Custom report action for Royal Fresh Agro Invoice -->
+    <record id="action_report_rfaf_invoice" model="ir.actions.report">
+        <field name="name">Royal Fresh Agro Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">royal_fresh_invoice_report.report_rfaf_invoice</field>
+        <field name="report_file">royal_fresh_invoice_report.report_rfaf_invoice</field>
+        <field name="paperformat_id" ref="paperformat_rfaf_a4"/>
+        <field name="is_invoice_report" eval="True"/>
+        <field name="print_report_name">(object._get_report_base_filename())</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_milk_demand_user,milk.demand.user,model_milk_demand,sales_team.group_sale_salesman,1,1,1,0
+access_milk_demand_manager,milk.demand.manager,model_milk_demand,sales_team.group_sale_manager,1,1,1,1
+access_milk_demand_line_user,milk.demand.line.user,model_milk_demand_line,sales_team.group_sale_salesman,1,1,1,0
+access_milk_demand_line_manager,milk.demand.line.manager,model_milk_demand_line,sales_team.group_sale_manager,1,1,1,1
