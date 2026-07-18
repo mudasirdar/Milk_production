@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Adds Fat % field to Purchase Order lines for milk products.
+
+        ODOO 19 RULES APPLIED:
+        1. column_invisible must use parent.field for parent model fields
+        2. Target product_id (the product field in purchase order lines)
+    -->
+    <record id="purchase_order_form_inherit_milk" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.milk</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']"
+                   position="after">
+
+                <!-- Hidden flag from LINE model — always hidden as a column -->
+                <field name="is_milk_product" column_invisible="1"/>
+
+                <!--
+                    column_invisible → hides entire column when no milk product in order
+                    required → only required for milk product lines
+                -->
+                <field
+                    name="milk_fat_percentage"
+                    string="Fat %"
+                    optional="show"
+                    column_invisible="not parent.has_milk_product"
+                    required="is_milk_product"/>
+
+                <field
+                    name="milk_snf_percentage"
+                    string="SNF %"
+                    optional="show"
+                    column_invisible="not parent.has_milk_product"
+                    required="is_milk_product"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

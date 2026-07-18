@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_milk_output_category_list" model="ir.ui.view">
+        <field name="name">milk.output.category.list</field>
+        <field name="model">milk.output.category</field>
+        <field name="arch" type="xml">
+            <list string="Milk Output Categories" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="target_fat"/>
+                <field name="target_snf"/>
+                <field name="output_product_id"/>
+                <field name="use_mrp" string="MRP"/>
+                <field name="bom_id" optional="hide"/>
+                <field name="smp_snf_percent" optional="hide"/>
+                <field name="intended_products" optional="hide"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_milk_output_category_form" model="ir.ui.view">
+        <field name="name">milk.output.category.form</field>
+        <field name="model">milk.output.category</field>
+        <field name="arch" type="xml">
+            <form string="Milk Output Category">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Standard Milk, Curd Base"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="basic" string="Basic Information">
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group name="targets" string="Target Parameters">
+                            <field name="target_fat"/>
+                            <field name="target_snf"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="product" string="Output Product">
+                            <field name="output_product_id"/>
+                        </group>
+                        <group name="smp" string="SMP Configuration">
+                            <field name="smp_snf_percent"/>
+                            <field name="use_custom_smp"/>
+                            <field name="smp_product_id" invisible="not use_custom_smp"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="mrp" string="MRP Settings">
+                            <field name="use_mrp" widget="boolean_toggle"/>
+                            <field name="bom_id" invisible="not use_mrp"/>
+                        </group>
+                    </group>
+                    <group string="Additional Information">
+                        <field name="intended_products" placeholder="e.g., Curd, Paneer, Cheese"/>
+                        <field name="description" placeholder="Description and usage notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_milk_output_category_search" model="ir.ui.view">
+        <field name="name">milk.output.category.search</field>
+        <field name="model">milk.output.category</field>
+        <field name="arch" type="xml">
+            <search string="Search Categories">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="output_product_id"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Company" name="company" context="{'group_by': 'company_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_milk_output_category" model="ir.actions.act_window">
+        <field name="name">Milk Output Categories</field>
+        <field name="res_model">milk.output.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first milk output category
+            </p>
+            <p>
+                Define different milk output categories with specific SNF and Fat targets.
+                Examples: Standard Milk (9.5% SNF), Curd Base (10.5% SNF), Paneer Base (11% SNF)
+            </p>
+        </field>
+    </record>
+
+</odoo>

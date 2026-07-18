@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend BOM Form View to show milk standardization fields -->
+    <record id="mrp_bom_form_inherit_milk_standardization" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.milk.standardization</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add milk standardization fields after the consumption field -->
+            <xpath expr="//field[@name='consumption']" position="after">
+                <field name="is_milk_standardization" invisible="1"/>
+                <separator string="Milk Standardization Parameters"
+                           invisible="type != 'milk_standardization'"/>
+                <group invisible="type != 'milk_standardization'">
+                    <group>
+                        <field name="target_fat_percent"/>
+                        <field name="target_snf_percent"/>
+                        <field name="smp_snf_percent"/>
+                    </group>
+                    <group>
+                        <field name="water_component_id"
+                               domain="[('type', 'in', ['product', 'consu'])]"/>
+                        <field name="smp_component_id"
+                               domain="[('type', 'in', ['product', 'consu'])]"/>
+                        <field name="raw_milk_component_id"
+                               domain="[('type', 'in', ['product', 'consu'])]"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend BOM Tree View to show milk standardization indicator -->
+    <record id="mrp_bom_tree_inherit_milk_standardization" model="ir.ui.view">
+        <field name="name">mrp.bom.tree.inherit.milk.standardization</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_milk_standardization" column_invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filter for milk standardization BOMs -->
+    <record id="mrp_bom_search_inherit_milk_standardization" model="ir.ui.view">
+        <field name="name">mrp.bom.search.inherit.milk.standardization</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='phantom']" position="after">
+                <filter string="Milk Standardization"
+                        name="milk_standardization"
+                        domain="[('type', '=', 'milk_standardization')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,12 @@
+/* Reduce chatter width for milk standardization form */
+.o_milk_standardization_form .o-mail-Form-chatter,
+.o_milk_standardization_form .o-mail-Chatter,
+.o_milk_standardization_form .o_ChatterContainer {
+    max-width: 400px;
+}
+
+/* For Odoo 19 chatter panel */
+.o_milk_standardization_form .o-mail-Form-chatter {
+    width: 400px;
+    min-width: 300px;
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_milk" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.milk.standardization</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Milk Standardization" string="Milk Standardization" name="milk_standardization" groups="stock.group_stock_manager">
+                    <block title="Auto-Standardization">
+                        <setting string="Milk Product Category" help="Products in this category will be automatically sent for daily standardization when received from vendors">
+                            <field name="milk_category_id"/>
+                        </setting>
+                    </block>
+                    <block title="Products">
+                        <setting string="Raw Milk Product (Input)" help="Product for raw milk received from farmers">
+                            <field name="milk_raw_product_id"/>
+                        </setting>
+                        <setting string="Standardized Milk Product (Output)" help="Product for standardized milk produced">
+                            <field name="milk_standardized_product_id"/>
+                        </setting>
+                        <setting string="Water Product" help="Product used for water addition during fat standardization">
+                            <field name="milk_water_product_id"/>
+                        </setting>
+                        <setting string="SMP Product" help="Skimmed Milk Powder product for SNF standardization">
+                            <field name="milk_smp_product_id"/>
+                        </setting>
+                    </block>
+                    <block title="Stock Locations">
+                        <setting string="Processing Location" help="Location where milk standardization process takes place">
+                            <field name="milk_processing_location_id"/>
+                        </setting>
+                    </block>
+                    <block title="Manufacturing (MRP) Integration">
+                        <setting string="Default BOM" help="Default Bill of Materials for milk standardization Manufacturing Orders">
+                            <field name="milk_default_bom_id"/>
+                        </setting>
+                        <setting string="Work Center" help="Work center where milk standardization operations are performed">
+                            <field name="milk_workcenter_id"/>
+                        </setting>
+                        <setting string="Use MRP by Default" help="Enable Manufacturing Order mode by default for new standardization records">
+                            <field name="milk_use_mrp_default"/>
+                        </setting>
+                        <setting string="Auto-create MO" help="Automatically create Manufacturing Order when starting standardization">
+                            <field name="milk_auto_create_mo"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

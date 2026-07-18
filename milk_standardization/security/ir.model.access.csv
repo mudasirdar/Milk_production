@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_milk_standardization_user,milk.standardization.user,model_milk_standardization,base.group_user,1,1,1,0
+access_milk_standardization_manager,milk.standardization.manager,model_milk_standardization,base.group_system,1,1,1,1
+access_milk_output_category_user,milk.output.category.user,model_milk_output_category,base.group_user,1,0,0,0
+access_milk_output_category_manager,milk.output.category.manager,model_milk_output_category,base.group_system,1,1,1,1
+access_milk_standardization_line_user,milk.standardization.line.user,model_milk_standardization_line,base.group_user,1,1,1,0
+access_milk_standardization_line_manager,milk.standardization.line.manager,model_milk_standardization_line,base.group_system,1,1,1,1

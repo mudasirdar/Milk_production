@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Top-level menu -->
+    <menuitem id="menu_dairy_root"
+              name="Dairy Operations"
+              sequence="50"
+              web_icon="milk_standardization,static/description/icon.png"/>
+
+    <!-- Sub-menu -->
+    <menuitem id="menu_milk_standardization"
+              name="Milk Standardization"
+              parent="menu_dairy_root"
+              sequence="10"/>
+
+    <!-- Action link -->
+    <menuitem id="menu_milk_standardization_list"
+              name="Standardization Records"
+              parent="menu_milk_standardization"
+              action="action_milk_standardization"
+              sequence="10"/>
+
+    <!-- Configuration sub-menu -->
+    <menuitem id="menu_milk_standardization_config"
+              name="Configuration"
+              parent="menu_milk_standardization"
+              sequence="50"/>
+
+    <!-- Output Categories -->
+    <menuitem id="menu_milk_output_category"
+              name="Milk Output Categories"
+              parent="menu_milk_standardization_config"
+              action="action_milk_output_category"
+              sequence="10"/>
+
+</odoo>

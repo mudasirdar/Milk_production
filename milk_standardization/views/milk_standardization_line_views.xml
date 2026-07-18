@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View (for inline in form) -->
+    <record id="view_milk_standardization_line_list" model="ir.ui.view">
+        <field name="name">milk.standardization.line.list</field>
+        <field name="model">milk.standardization.line</field>
+        <field name="arch" type="xml">
+            <list string="Output Categories" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="output_category_id"/>
+                <field name="allocated_qty"/>
+                <field name="allocation_percentage" optional="show"/>
+                <field name="target_fat"/>
+                <field name="target_snf"/>
+                <field name="water_to_add"/>
+                <field name="water_manual_override" column_invisible="1"/>
+                <field name="milk_after_water" readonly="1" optional="hide"/>
+                <field name="snf_after_water_estimated" readonly="1" optional="hide"/>
+                <field name="water_consumed" invisible="state == 'draft'"/>
+                <field name="snf_after_water" invisible="state == 'draft'"/>
+                <field name="smp_to_add" readonly="1" invisible="state == 'draft'"/>
+                <field name="smp_consumed" invisible="state in ['draft', 'step1']"/>
+                <field name="final_qty" readonly="1"/>
+                <field name="final_fat_verified" invisible="state in ['draft', 'step1']"/>
+                <field name="final_snf_verified" invisible="state in ['draft', 'step1']"/>
+                <field name="output_product_id"/>
+                <field name="use_mrp" string="MRP" optional="show"/>
+                <field name="production_id" string="MO" optional="show" readonly="1"/>
+                <field name="production_state" string="MO Status" optional="hide"/>
+                <field name="state" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Detailed Form View -->
+    <record id="view_milk_standardization_line_form" model="ir.ui.view">
+        <field name="name">milk.standardization.line.form</field>
+        <field name="model">milk.standardization.line</field>
+        <field name="arch" type="xml">
+            <form string="Output Category Line">
+                <sheet>
+                    <group>
+                        <group string="Category &amp; Allocation">
+                            <field name="standardization_id" readonly="1"/>
+                            <field name="output_category_id"/>
+                            <field name="allocated_qty"/>
+                            <field name="allocation_percentage" readonly="1"/>
+                            <field name="output_product_id"/>
+                        </group>
+                        <group string="Input Values">
+                            <field name="input_fat"/>
+                            <field name="input_snf"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Targets">
+                            <field name="target_fat"/>
+                            <field name="target_snf"/>
+                            <field name="smp_snf_percent"/>
+                        </group>
+                        <group string="State">
+                            <field name="state"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="MRP Integration">
+                            <field name="use_mrp" widget="boolean_toggle"/>
+                            <field name="bom_id" invisible="not use_mrp"/>
+                            <field name="production_id" readonly="1" invisible="not production_id"/>
+                            <field name="production_state" invisible="not production_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Water Addition (Step 1)" name="step1">
+                            <group>
+                                <group string="Water Calculation">
+                                    <field name="water_to_add"/>
+                                    <field name="water_manual_override" readonly="1" widget="boolean"/>
+                                    <button name="action_reset_water_calculation"
+                                            string="Reset to Auto-Calculate"
+                                            type="object"
+                                            class="btn-secondary"
+                                            invisible="not water_manual_override"/>
+                                    <field name="milk_after_water" readonly="1"/>
+                                    <field name="snf_after_water_estimated" readonly="1"/>
+                                </group>
+                                <group string="Actual Measured Values">
+                                    <field name="water_consumed"/>
+                                    <field name="fat_after_water"/>
+                                    <field name="snf_after_water"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="SMP Addition (Step 2)" name="step2">
+                            <group>
+                                <group string="Calculated">
+                                    <field name="smp_to_add" readonly="1"/>
+                                </group>
+                                <group string="Actual">
+                                    <field name="smp_consumed"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Final Output" name="output">
+                            <group>
+                                <group string="Output">
+                                    <field name="final_qty" readonly="1"/>
+                                </group>
+                                <group string="Verification">
+                                    <field name="final_fat_verified"/>
+                                    <field name="final_snf_verified"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes for this line..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_milk_standardization_line_search" model="ir.ui.view">
+        <field name="name">milk.standardization.line.search</field>
+        <field name="model">milk.standardization.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Lines">
+                <field name="standardization_id"/>
+                <field name="output_category_id"/>
+                <field name="output_product_id"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Water Added" name="step1" domain="[('state', '=', 'step1')]"/>
+                <filter string="SMP Added" name="step2" domain="[('state', '=', 'step2')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Standardization" name="by_standardization" context="{'group_by': 'standardization_id'}"/>
+                <filter string="Category" name="by_category" context="{'group_by': 'output_category_id'}"/>
+                <filter string="State" name="by_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for standalone view -->
+    <record id="action_milk_standardization_line" model="ir.actions.act_window">
+        <field name="name">Standardization Lines</field>
+        <field name="res_model">milk.standardization.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

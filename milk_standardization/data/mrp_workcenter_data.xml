@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default Work Center for Milk Standardization -->
+        <record id="workcenter_milk_standardization" model="mrp.workcenter">
+            <field name="name">Milk Standardization Station</field>
+            <field name="code">MSTD</field>
+            <field name="time_efficiency">100</field>
+            <field name="costs_hour">0</field>
+        </record>
+    </data>
+</odoo>

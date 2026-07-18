@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_picking_form_inherit_milk" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.milk.standardization</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Add smart button for standardization count -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_standardizations"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-flask"
+                        invisible="standardization_count == 0">
+                    <field name="standardization_count" widget="statinfo" string="Standardizations"/>
+                </button>
+            </xpath>
+
+            <!-- Add Standardization button in header for incoming receipts -->
+            <xpath expr="//header" position="inside">
+                <!-- Show "View Standardization" when record exists -->
+                <button name="action_create_standardization"
+                        string="View Standardization"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state != 'done' or picking_type_code != 'incoming' or standardization_count == 0"/>
+                <!-- Show "Create Standardization" when no record exists -->
+                <button name="action_create_standardization"
+                        string="Create Standardization"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'done' or picking_type_code != 'incoming' or standardization_count != 0"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
