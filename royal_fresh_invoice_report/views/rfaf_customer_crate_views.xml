@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── List View ─────────────────────────────────────────────────────── -->
+    <record id="rfaf_customer_crate_tree" model="ir.ui.view">
+        <field name="name">rfaf.customer.crate.list</field>
+        <field name="model">rfaf.customer.crate</field>
+        <field name="arch" type="xml">
+            <list string="Customer Crates">
+                <field name="partner_id"/>
+                <field name="total_issued" sum="Total Issued"/>
+                <field name="total_returned" sum="Total Returned"/>
+                <field name="total_balance" sum="Total Balance"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Return History List View ──────────────────────────────────────── -->
+    <record id="rfaf_invoice_crate_return_history_tree" model="ir.ui.view">
+        <field name="name">rfaf.invoice.crate.return.history.list</field>
+        <field name="model">rfaf.invoice.crate.return</field>
+        <field name="arch" type="xml">
+            <list string="Crate Return History" create="0" edit="0">
+                <field name="date"/>
+                <field name="move_id" string="Invoice"/>
+                <field name="sale_order_id"/>
+                <field name="crate_size" string="Units/Crate"/>
+                <field name="crates_issued"/>
+                <field name="crates_returned"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Form View ─────────────────────────────────────────────────────── -->
+    <record id="rfaf_customer_crate_form" model="ir.ui.view">
+        <field name="name">rfaf.customer.crate.form</field>
+        <field name="model">rfaf.customer.crate</field>
+        <field name="arch" type="xml">
+            <form string="Customer Crate Tracking">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_return_history"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-history">
+                            <field name="return_history_count"
+                                   widget="statinfo"
+                                   string="Returns"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="total_issued"/>
+                            <field name="total_returned"/>
+                            <field name="total_balance"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Crate Details">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="line_type" readonly="1"/>
+                                    <field name="date" readonly="1"/>
+                                    <field name="sale_order_id" readonly="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="crate_size" string="Units/Crate" readonly="1"/>
+                                    <field name="crates_issued" readonly="1"/>
+                                    <field name="crates_returned" readonly="1"/>
+                                    <field name="balance"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Search View ───────────────────────────────────────────────────── -->
+    <record id="rfaf_customer_crate_search" model="ir.ui.view">
+        <field name="name">rfaf.customer.crate.search</field>
+        <field name="model">rfaf.customer.crate</field>
+        <field name="arch" type="xml">
+            <search string="Customer Crates">
+                <field name="partner_id" string="Customer"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ────────────────────────────────────────────────────────── -->
+    <record id="action_rfaf_customer_crate" model="ir.actions.act_window">
+        <field name="name">Customer Crates</field>
+        <field name="res_model">rfaf.customer.crate</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="rfaf_customer_crate_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No crate tracking records yet.
+            </p>
+            <p>
+                Records are created automatically when a Sale Order
+                with crate products is confirmed.
+            </p>
+        </field>
+    </record>
+
+    <!-- ── Menu ──────────────────────────────────────────────────────────── -->
+    <menuitem id="menu_rfaf_crate_root"
+              name="Crate Tracking"
+              parent="account.menu_finance"
+              sequence="41"/>
+
+    <menuitem id="menu_rfaf_customer_crate"
+              name="Customer Crates"
+              parent="menu_rfaf_crate_root"
+              action="action_rfaf_customer_crate"
+              sequence="10"/>
+
+</odoo>

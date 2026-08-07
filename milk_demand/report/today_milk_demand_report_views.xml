@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paperformat for A4 Landscape -->
+    <record id="paperformat_milk_demand_landscape" model="report.paperformat">
+        <field name="name">Milk Demand - A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Action -->
+    <record id="action_report_today_milk_demand" model="ir.actions.report">
+        <field name="name">Milk Demands Report</field>
+        <field name="model">milk.demand</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">milk_demand.report_today_milk_demand_template</field>
+        <field name="report_file">milk_demand.report_today_milk_demand_template</field>
+        <field name="paperformat_id" ref="paperformat_milk_demand_landscape"/>
+        <field name="print_report_name">'Daily_Milk_Demand_%s' % (object.env.context.get('date') or time.strftime('%Y-%m-%d'))</field>
+    </record>
+
+    <!-- Server Action bound to Milk Demand -->
+    <record id="action_print_today_milk_demands_server" model="ir.actions.server">
+        <field name="name">Download Demand PDF</field>
+        <field name="model_id" ref="model_milk_demand"/>
+        <field name="binding_model_id" ref="model_milk_demand"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = env['milk.demand'].action_open_demand_report_wizard()
+        </field>
+    </record>
+</odoo>

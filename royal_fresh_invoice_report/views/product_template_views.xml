@@ -7,7 +7,7 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <!-- Add "Use Crates" checkbox and liters per crate field -->
+            <!-- Add "Use Crates" checkbox and units per crate -->
             <xpath expr="//field[@name='type']" position="after">
                 <field name="rfaf_use_crates"/>
                 <field name="rfaf_units_per_crate"

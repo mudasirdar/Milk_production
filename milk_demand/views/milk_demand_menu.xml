@@ -31,4 +31,10 @@
               action="action_milk_demand_pending"
               sequence="30"/>
 
+    <menuitem id="menu_milk_demand_print_today"
+              name="Download Demand PDF"
+              parent="menu_milk_demand_demands"
+              action="action_milk_demand_report_wizard"
+              sequence="40"/>
+
 </odoo>

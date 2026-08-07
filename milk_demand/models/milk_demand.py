@@ -191,6 +191,33 @@ class MilkDemand(models.Model):
             'target': 'current',
         }
 
+    def action_print_today_demands(self):
+        """Download Today's Milk Demands PDF report."""
+        today = fields.Date.today()
+        today_demands = self.filtered(
+            lambda r: r.demand_date == today and r.state != 'cancelled'
+        )
+        if not today_demands:
+            today_demands = self.search([
+                ('demand_date', '=', today),
+                ('state', '!=', 'cancelled')
+            ])
+
+        if not today_demands:
+            raise UserError(_("No active milk demands found for today (%s).") % today.strftime('%d-%m-%Y'))
+
+        return self.env.ref('milk_demand.action_report_today_milk_demand').report_action(today_demands)
+
+    def action_open_demand_report_wizard(self):
+        """Open the Demand PDF Report Date Selection Wizard."""
+        return {
+            'name': _('Download Demand PDF'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'milk.demand.report.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
 
 class MilkDemandLine(models.Model):
     _name = 'milk.demand.line'

@@ -18,6 +18,9 @@
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'wizard/milk_demand_report_wizard_views.xml',
+        'report/today_milk_demand_report_views.xml',
+        'report/today_milk_demand_report_template.xml',
         'views/milk_demand_views.xml',
         'views/milk_demand_menu.xml',
     ],

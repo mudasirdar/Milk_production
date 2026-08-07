@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_rfaf_crates" model="ir.ui.view">
+        <field name="name">res.partner.form.rfaf.crates</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Crate Balances" name="rfaf_crate_balances">
+                    <group string="Crate Balance by Size">
+                        <field name="rfaf_crate_balance_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="crate_size" string="Units/Crate"/>
+                                <field name="initial_balance" string="Opening Balance"/>
+                                <field name="total_issued" readonly="1"/>
+                                <field name="total_returned" readonly="1"/>
+                                <field name="balance" readonly="1"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

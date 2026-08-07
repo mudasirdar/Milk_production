@@ -25,4 +25,5 @@ class SaleOrderLine(models.Model):
         """Pass crates value to the invoice line."""
         res = super()._prepare_invoice_line(**optional_values)
         res['rfaf_crates'] = self.rfaf_crates
+        res['rfaf_dispatched_qty'] = res.get('quantity', self.product_uom_qty)
         return res

@@ -89,6 +89,10 @@
                   decoration-success="state == 'converted'"
                   decoration-info="state == 'confirmed'"
                   decoration-muted="state == 'cancelled'">
+                <header>
+                    <button name="action_open_demand_report_wizard" string="Download Demand PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                </header>
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="demand_date"/>

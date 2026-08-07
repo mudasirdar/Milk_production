@@ -223,7 +223,7 @@
                                             <div class="product-note"><t t-esc="line.name"/></div>
                                         </t>
                                     </td>
-                                    <td><span t-field="line.quantity"/></td>
+                                    <td><t t-esc="'%.2f' % line.rfaf_dispatched_qty"/></td>
                                     <td>
                                         <t t-if="line.rfaf_return_qty"><t t-esc="'%.2f' % line.rfaf_return_qty"/></t>
                                         <t t-else="">—</t>
@@ -281,7 +281,7 @@
                                 <tr class="total-row">
                                     <td>Total Bal.</td>
                                     <td>
-                                        <span t-esc="'{:,.2f}'.format(o.amount_total + (o.rfaf_previous_balance or 0.0))"/>
+                                        <span t-esc="'{:,.2f}'.format((o.amount_total or 0.0) + (o.rfaf_previous_balance or 0.0))"/>
                                     </td>
                                 </tr>
                                 <tr>

@@ -1,1 +1,16 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rfaf_return_leakage_invoice,rfaf.return.leakage.invoice,model_rfaf_return_leakage,account.group_account_invoice,1,1,1,1
+access_rfaf_return_leakage_manager,rfaf.return.leakage.manager,model_rfaf_return_leakage,account.group_account_manager,1,1,1,1
+access_rfaf_return_leakage_line_invoice,rfaf.return.leakage.line.invoice,model_rfaf_return_leakage_line,account.group_account_invoice,1,1,1,1
+access_rfaf_return_leakage_line_manager,rfaf.return.leakage.line.manager,model_rfaf_return_leakage_line,account.group_account_manager,1,1,1,1
+access_rfaf_customer_crate_invoice,rfaf.customer.crate.invoice,model_rfaf_customer_crate,account.group_account_invoice,1,1,1,1
+access_rfaf_customer_crate_manager,rfaf.customer.crate.manager,model_rfaf_customer_crate,account.group_account_manager,1,1,1,1
+access_rfaf_customer_crate_line_invoice,rfaf.customer.crate.line.invoice,model_rfaf_customer_crate_line,account.group_account_invoice,1,1,1,1
+access_rfaf_customer_crate_line_manager,rfaf.customer.crate.line.manager,model_rfaf_customer_crate_line,account.group_account_manager,1,1,1,1
+access_rfaf_invoice_crate_return_invoice,rfaf.invoice.crate.return.invoice,model_rfaf_invoice_crate_return,account.group_account_invoice,1,1,1,1
+access_rfaf_invoice_crate_return_manager,rfaf.invoice.crate.return.manager,model_rfaf_invoice_crate_return,account.group_account_manager,1,1,1,1
+access_rfaf_customer_crate_balance_invoice,rfaf.customer.crate.balance.invoice,model_rfaf_customer_crate_balance,account.group_account_invoice,1,1,1,1
+access_rfaf_customer_crate_balance_manager,rfaf.customer.crate.balance.manager,model_rfaf_customer_crate_balance,account.group_account_manager,1,1,1,1
+access_rfaf_customer_crate_balance_sales,rfaf.customer.crate.balance.sales,model_rfaf_customer_crate_balance,base.group_user,1,0,0,0
+access_rfaf_po_report_wizard_invoice,rfaf.po.report.wizard.invoice,model_rfaf_po_report_wizard,account.group_account_invoice,1,1,1,1
+access_rfaf_po_report_wizard_manager,rfaf.po.report.wizard.manager,model_rfaf_po_report_wizard,account.group_account_manager,1,1,1,1

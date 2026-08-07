@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_rfaf_po_report_wizard_form" model="ir.ui.view">
+        <field name="name">rfaf.po.report.wizard.form</field>
+        <field name="model">rfaf.po.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Download Purchase Order PDF">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_print_report" string="Download PDF"
+                            type="object" class="btn-primary" icon="fa-download"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rfaf_po_report_wizard" model="ir.actions.act_window">
+        <field name="name">Download Purchase Order PDF</field>
+        <field name="res_model">rfaf.po.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_rfaf_po_report_wizard"
+              name="Purchase Order Report"
+              parent="purchase.menu_purchase_root"
+              action="action_rfaf_po_report_wizard"
+              sequence="90"/>
+
+</odoo>

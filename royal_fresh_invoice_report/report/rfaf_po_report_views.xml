@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paperformat: A4 Landscape (same as demand report) -->
+    <record id="paperformat_rfaf_po_landscape" model="report.paperformat">
+        <field name="name">Purchase Order - A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Action -->
+    <record id="action_report_rfaf_purchase_order" model="ir.actions.report">
+        <field name="name">Purchase Order Report</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">royal_fresh_invoice_report.report_rfaf_po_template</field>
+        <field name="report_file">royal_fresh_invoice_report.report_rfaf_po_template</field>
+        <field name="paperformat_id" ref="paperformat_rfaf_po_landscape"/>
+        <field name="print_report_name">'Purchase_Orders_%s' % (object.env.context.get('date') or time.strftime('%Y-%m-%d'))</field>
+    </record>
+
+</odoo>

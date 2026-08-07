@@ -24,12 +24,16 @@
                        invisible="move_type not in ('out_invoice', 'out_refund')"/>
             </xpath>
 
-            <!-- Add Crates field before quantity (crates calculates quantity) -->
+            <!-- Add Crates field before quantity -->
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="before">
                 <field name="rfaf_crates" string="Crates" optional="show"/>
+                <field name="rfaf_dispatched_qty" string="Qty" optional="show"/>
             </xpath>
 
-            <!-- Add Return / Leakage / Sold columns after quantity -->
+            <!-- Hide standard quantity column, add Return / Leakage / Sold after it -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="after">
                 <field name="rfaf_return_qty"   string="Return"   optional="show"/>
                 <field name="rfaf_leakage_qty"  string="Leakage"  optional="show"/>
@@ -40,20 +44,30 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Agro / Dairy Info" name="rfaf_agro_info"
                       invisible="move_type not in ('out_invoice', 'out_refund')">
-                    <group string="Crates Tracking">
+                    <group string="Crates Summary">
                         <group>
                             <field name="rfaf_bill_crats" readonly="1"/>
-                            <field name="rfaf_previous_crats"/>
+                            <field name="rfaf_previous_crats" readonly="1"/>
                             <field name="rfaf_total_crats" readonly="1"/>
                         </group>
                         <group>
-                            <field name="rfaf_return_crets"/>
+                            <field name="rfaf_return_crets" readonly="1"/>
                             <field name="rfaf_total_crats_bal" readonly="1"/>
                         </group>
                     </group>
+                    <group string="Crates by Size">
+                        <field name="rfaf_crate_return_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="crate_size" string="Units/Crate" readonly="1"/>
+                                <field name="previous_balance" readonly="1"/>
+                                <field name="crates_issued" readonly="1"/>
+                                <field name="crates_returned"/>
+                            </list>
+                        </field>
+                    </group>
                     <group string="Financial Summary">
                         <group>
-                            <field name="rfaf_previous_balance"/>
+                            <field name="rfaf_previous_balance" readonly="1"/>
                             <field name="rfaf_received_cash"/>
                         </group>
                         <group>
