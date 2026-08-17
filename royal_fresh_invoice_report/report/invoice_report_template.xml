@@ -154,6 +154,9 @@
                     <!-- COMPANY HEADER -->
                     <div class="rfaf-company-header">
                         <div class="rfaf-company-name"><t t-esc="o.company_id.name"/></div>
+                        <div style="font-size: 10pt; font-weight: 700; color: #017e84; margin-bottom: 6px; letter-spacing: 0.5px;">
+                            PROCESSING &amp; PACKING OF MILK &amp; MILK PRODUCTS
+                        </div>
                         <div class="rfaf-company-address">
                             <t t-if="o.company_id.street"><t t-esc="o.company_id.street"/></t>
                             <t t-if="o.company_id.city">, <t t-esc="o.company_id.city"/></t>
