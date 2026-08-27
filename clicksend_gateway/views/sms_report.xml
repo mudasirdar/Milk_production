@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data>        
+        <record id="sms_report_inherited_in_clicksend_form_view" model="ir.ui.view">
+            <field name="name">wk.sms.repor.form.inherited.Clicksend</field>
+            <field name="model">sms.report</field>
+            <field name="inherit_id" ref="sms_notification.sms_report_form_view"/>          
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='sms_info']" position="inside">
+                    <group string="ClickSend Related Inforamtion" invisible="sms_gateway != 'clicksend'" >
+                        <field name="id" invisible="1"/>
+                        <field name="sms_gateway" invisible="1"/>
+                        <field name="clicksend_message_id" readonly="1"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

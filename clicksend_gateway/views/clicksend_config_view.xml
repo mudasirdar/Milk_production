@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data>
+        <record id="sms_mail_server_clicksend_formview" model="ir.ui.view">
+            <field name="name">sms.mail.server.clicksend.config</field>
+            <field name="model">sms.mail.server</field>   
+            <field name="inherit_id" ref="sms_notification.sms_mail_server_formview"/>                     
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='conn_info']" position="after">
+                    <group string='Security And Authentication' invisible="gateway != 'clicksend'">
+                        <field name="clicksend_username" placeholder="ClickSend Username" required="gateway == 'clicksend'" password="true"/>
+                        <field name="clicksend_password" placeholder="ClickSend Password" required="gateway == 'clicksend'" password="true"/>
+                        <field name="clicksend_api_key" placeholder="ClickSend API Key" required="gateway == 'clicksend'" password="true"/>
+                        <field name="use_companyname" required="gateway == 'clicksend'"/>
+                        <button name="test_conn_clicksend" string="Test Connection" type="object"  />  
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

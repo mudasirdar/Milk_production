@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="sms_notification" model="res.groups">
+            <field name="name">Enable SMS Feature</field>
+        </record>
+
+    </data>
+</odoo>
+
