@@ -24,8 +24,18 @@ class PurchaseOrder(models.Model):
                 )
                 continue
 
-            message = "Hello %s, your Purchase Order %s is confirmed!" % (
-                order.partner_id.name, order.name
+            previous_balance = order.partner_id.debit - order.amount_total
+            message = (
+                "Hello %s, your Purchase Order %s is confirmed!\n"
+                "Order Amount: %.2f\n"
+                "Previous Balance: %.2f\n"
+                "Total Balance: %.2f"
+            ) % (
+                order.partner_id.name,
+                order.name,
+                order.amount_total,
+                previous_balance,
+                order.amount_total + previous_balance,
             )
             payload = {
                 "recipients": [phone],
