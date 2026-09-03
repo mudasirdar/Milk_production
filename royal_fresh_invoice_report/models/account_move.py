@@ -76,7 +76,7 @@ class AccountMove(models.Model):
             if move.partner_id and move.move_type in ('out_invoice', 'out_refund'):
                 domain = [
                     ('partner_id', '=', move.partner_id.commercial_partner_id.id),
-                    ('account_id.account_type', '=', 'asset_receivable'),
+                    ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')),
                     ('parent_state', '=', 'posted'),
                     ('reconciled', '=', False),
                 ]
