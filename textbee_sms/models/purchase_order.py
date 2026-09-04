@@ -24,13 +24,7 @@ class PurchaseOrder(models.Model):
                 )
                 continue
 
-            # Get previous balance from partner ledger (payable account)
-            payable_lines = self.env['account.move.line'].search([
-                ('partner_id', '=', order.partner_id.id),
-                ('account_id.account_type', '=', 'liability_payable'),
-                ('parent_state', '=', 'posted'),
-            ])
-            previous_balance = sum(payable_lines.mapped(lambda l: l.credit - l.debit))
+            previous_balance = order.partner_id.debit
             message = (
                 "Hello %s, your Purchase Order %s is confirmed!\n"
                 "Order Amount: %.2f\n"

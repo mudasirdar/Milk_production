@@ -24,13 +24,7 @@ class SaleOrder(models.Model):
                 )
                 continue
 
-            # Get previous balance from partner ledger (receivable account)
-            receivable_lines = self.env['account.move.line'].search([
-                ('partner_id', '=', order.partner_id.id),
-                ('account_id.account_type', '=', 'asset_receivable'),
-                ('parent_state', '=', 'posted'),
-            ])
-            previous_balance = sum(receivable_lines.mapped(lambda l: l.debit - l.credit))
+            previous_balance = order.partner_id.credit
             message = (
                 "Hello %s, your Sale Order %s is confirmed!\n"
                 "Order Amount: %.2f\n"
