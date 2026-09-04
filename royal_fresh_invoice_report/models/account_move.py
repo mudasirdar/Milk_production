@@ -69,21 +69,33 @@ class AccountMove(models.Model):
     )
 
     # ── Computed fields ───────────────────────────────────────────────────
-    @api.depends('partner_id', 'currency_id')
+    @api.depends('partner_id', 'currency_id', 'invoice_date')
     def _compute_previous_balance(self):
         for move in self:
             balance = 0.0
             if move.partner_id and move.move_type in ('out_invoice', 'out_refund'):
+                # Use invoice_date as the cutoff so the "previous" balance
+                # reflects what was outstanding before this invoice's date.
+                # Fall back to today when the date is not yet set (draft state).
+                cutoff_date = move.invoice_date or fields.Date.context_today(move)
+
                 domain = [
                     ('partner_id', '=', move.partner_id.commercial_partner_id.id),
-                    ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')),
+                    # Only customer-receivable lines; do NOT mix in liability_payable
+                    # (vendor payable) lines as they have opposite sign meaning.
+                    ('account_id.account_type', '=', 'asset_receivable'),
                     ('parent_state', '=', 'posted'),
                     ('reconciled', '=', False),
+                    # Only lines whose move date is strictly before this invoice
+                    ('date', '<', cutoff_date),
                 ]
-                # Exclude current invoice's own lines
+                # Exclude current invoice's own lines (safety guard for same-date)
                 if move.id:
                     domain.append(('move_id', '!=', move.id))
                 lines = self.env['account.move.line'].search(domain)
+                # amount_residual is positive for unpaid debit (invoice) lines
+                # and negative for unapplied credit (refund/payment) lines —
+                # summing gives the net outstanding balance correctly.
                 balance = sum(lines.mapped('amount_residual'))
             move.rfaf_previous_balance = balance
 
