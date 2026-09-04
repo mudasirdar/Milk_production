@@ -24,7 +24,7 @@ class PurchaseOrder(models.Model):
                 )
                 continue
 
-            previous_balance = order.partner_id.debit
+            previous_balance = order.partner_id.credit - order.partner_id.debit
             message = (
                 "Hello %s, your Purchase Order %s is confirmed!\n"
                 "Order Amount: %.2f\n"
