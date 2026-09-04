@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
                 )
                 continue
 
-            previous_balance = (order.partner_id.debit - order.partner_id.credit) - order.amount_total
+            previous_balance = abs(order.partner_id.debit - order.partner_id.credit)
             message = (
                 "Hello %s, your Sale Order %s is confirmed!\n"
                 "Order Amount: %.2f\n"
