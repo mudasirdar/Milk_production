@@ -64,12 +64,12 @@ class AccountMove(models.Model):
     rfaf_total_balance = fields.Monetary(
         string='Total Balance',
         compute='_compute_total_balance',
-        store=True,
         currency_field='currency_id',
     )
 
     # ── Computed fields ───────────────────────────────────────────────────
-    @api.depends('partner_id', 'currency_id', 'invoice_date')
+    @api.depends('partner_id', 'currency_id', 'invoice_date',
+                 'state', 'amount_total')
     def _compute_previous_balance(self):
         for move in self:
             balance = 0.0
@@ -110,7 +110,8 @@ class AccountMove(models.Model):
             move.rfaf_total_crats = total
             move.rfaf_total_crats_bal = total - (move.rfaf_return_crets or 0)
 
-    @api.depends('amount_total', 'rfaf_previous_balance', 'rfaf_received_cash')
+    @api.depends('partner_id', 'currency_id', 'invoice_date',
+                 'state', 'amount_total', 'rfaf_received_cash')
     def _compute_total_balance(self):
         for move in self:
             move.rfaf_total_balance = (
