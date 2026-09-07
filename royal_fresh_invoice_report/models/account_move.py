@@ -75,6 +75,10 @@ class AccountMove(models.Model):
             balance = 0.0
             if move.partner_id and move.move_type in ('out_invoice', 'out_refund'):
                 balance = abs(move.partner_id.debit - move.partner_id.credit)
+                # When the invoice is posted, partner.debit already includes
+                # this invoice's amount — subtract it to get the previous balance.
+                if move.state == 'posted':
+                    balance -= move.amount_total
             move.rfaf_previous_balance = balance
 
     @api.depends('partner_id')
